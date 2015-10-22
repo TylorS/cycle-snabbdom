@@ -1,19 +1,7 @@
 {
-<<<<<<< HEAD
-  "env": {
-    "browser": true,
-    "node": true,
-  },
-  "rules": {
-    "quotes": [1, "single"],
-    "strict": 0
-  },
-  "parser": "babel-eslint"
-=======
   "extends": "eslint-config-cycle",
   "env": {
     "browser": true,
     "node": true
   }
->>>>>>> 6d784a563f8b93e6752923a262fece8867295c33
 }
