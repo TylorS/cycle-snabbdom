@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cycle-JSX-IR
 
 This is a Cycle driver which uses the fantastic [JSX-IR](https://github.com/jsx-ir) library.
@@ -89,3 +90,7 @@ function view(state$) {
 }
 ```
 UI Partials that return hyperscript **can** be used in JSX and partials that return JSX **can** be used from hyperscript!
+=======
+# cycle-snabbdom
+Alternative DOM driver utilizing the snabbdom library
+>>>>>>> 6d784a563f8b93e6752923a262fece8867295c33

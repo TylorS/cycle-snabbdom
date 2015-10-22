@@ -1,8 +1,15 @@
 root = true
 
 [*]
+<<<<<<< HEAD
 indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
 end_of_line = lf
 insert_final_newline = true
+=======
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+>>>>>>> 6d784a563f8b93e6752923a262fece8867295c33
