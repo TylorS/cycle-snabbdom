@@ -49,5 +49,8 @@
     "fast.js": "^0.1.1",
     "hyperscript-helpers": "^2.0.2",
     "snabbdom": "^0.2.7"
+  },
+  "peerDependencies": {
+    "rx": "*"
   }
 }

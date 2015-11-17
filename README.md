@@ -1,5 +1,2 @@
-# Motorcycle.js DOM Driver 
-
-The Standard DOM Driver for motorcycle.js
-
-More information available soon!
+# cycle-snabbdom
+Alternative DOM driver utilizing the snabbdom library
