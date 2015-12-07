@@ -1,7 +1,7 @@
 /* global describe, it, beforeEach */
 import assert from 'assert'
 import { run } from '@cycle/core'
-import { makeDOMDriver, div, p, span, h3 } from '../../src'
+import { makeDOMDriver, div, p, span, h2, h3, h4 } from '../../src'
 import Rx from 'rx'
 
 function click(el){
@@ -77,6 +77,21 @@ describe('Rendering', () => {
       })
     })
   })
+
+  it(`should have isolateSource() and isolateSink() in source`, done => {
+    function app() {
+      return {
+        DOM: Rx.Observable.just(div()),
+      }
+    }
+    const [sinks, sources] = run(app, {
+      DOM: makeDOMDriver(createRenderTarget()),
+    })
+    assert.strictEqual(typeof sources.DOM.isolateSource, `function`)
+    assert.strictEqual(typeof sources.DOM.isolateSink, `function`)
+    done()
+  })
+
   it('should catch interactions coming from wrapped view', done => {
     const app = () => ({
       DOM: Rx.Observable.just(
@@ -200,6 +215,154 @@ describe('Rendering', () => {
       assert.strictEqual(grandchildren[1].tagName, 'H3')
       assert.strictEqual(grandchildren[1].textContent, 'Baz')
       done()
+    })
+  })
+
+  describe(`isolateSource`, () => {
+    it(`should have the same effect as DOM.select()`, done => {
+      function app() {
+        return {
+          DOM: Rx.Observable.just(
+            h3(`.top-most`, [
+              h2(`.bar`, `Wrong`),
+              div(`.cycle-scope-foo`, [
+                h4(`.bar`, `Correct`),
+              ]),
+            ])
+          ),
+        }
+      }
+      let [sinks, sources] = run(app, {
+        DOM: makeDOMDriver(createRenderTarget()),
+      })
+      let isolatedDOMSource = sources.DOM.isolateSource(sources.DOM, `foo`)
+      // Make assertions
+      isolatedDOMSource.select(`.bar`).events(`click`).subscribe(ev => {
+        assert.strictEqual(ev.type, `click`)
+        assert.strictEqual(ev.target.textContent, `Correct`)
+
+        done()
+      })
+      sources.DOM.select(`:root`).observable
+        .subscribe(root => {
+          let wrongElement = root.querySelector(`.bar`)
+          let correctElement = root.querySelector(`.cycle-scope-foo .bar`)
+          assert.notStrictEqual(wrongElement, null)
+          assert.notStrictEqual(correctElement, null)
+          assert.notStrictEqual(typeof wrongElement, `undefined`)
+          assert.notStrictEqual(typeof correctElement, `undefined`)
+          assert.strictEqual(wrongElement.tagName, `H2`)
+          assert.strictEqual(correctElement.tagName, `H4`)
+          assert.doesNotThrow(() => {
+            click(wrongElement)
+            setTimeout(() => click(correctElement), 5)
+          })
+          done()
+        })
+    })
+
+    it(`should return source also with isolateSource and isolateSink`,
+        done => {
+          function app() {
+            return {
+              DOM: Rx.Observable.just(h3(`.top-most`)),
+            }
+          }
+          let [sinks, sources] = run(app, {
+            DOM: makeDOMDriver(createRenderTarget()),
+          })
+          let isolatedDOMSource =
+            sources.DOM.isolateSource(sources.DOM, `top-most`)
+          // Make assertions
+          assert.strictEqual(typeof isolatedDOMSource.isolateSource, `function`)
+          assert.strictEqual(typeof isolatedDOMSource.isolateSink, `function`)
+
+          done()
+        })
+  })
+
+  describe(`isolateSink`, () => {
+    it(`should add a className to the vtree sink`, done => {
+      function app(sources) {
+        let vtree$ = Rx.Observable.just(
+            h3(`.top-most`)
+          )
+        return {
+          DOM: sources.DOM.isolateSink(vtree$, `foo`),
+        }
+      }
+      let [sinks, sources] = run(app, {
+        DOM: makeDOMDriver(createRenderTarget()),
+      })
+      // Make assertions
+      sources.DOM.select(`:root`).observable
+        .subscribe(root => {
+          console.log(root)
+          assert.notStrictEqual(root, null)
+          assert.notStrictEqual(typeof root, `undefined`)
+          assert.strictEqual(root.tagName, `H3`)
+          assert.strictEqual(root.className, `top-most cycle-scope-foo`)
+          done()
+        })
+    })
+
+    it(`should prevent parent from DOM.selecting() inside the isolation`,
+      done => {
+        function app(sources) {
+          return {
+            DOM: Rx.Observable.just(
+              h3(`.top-most`, [
+                sources.DOM.isolateSink(Rx.Observable.just(
+                  div(`.foo`, [
+                    h4(`.bar`, `Wrong`),
+                  ])
+                ), `ISOLATION`),
+                h2(`.bar`, `Correct`),
+              ])
+            ),
+          }
+        }
+        let [sinks, sources] = run(app, {
+          DOM: makeDOMDriver(createRenderTarget()),
+        })
+        sources.DOM.select(`.bar`).observable.subscribe(elements => {
+          assert.strictEqual(Array.isArray(elements), true)
+          assert.strictEqual(elements.length, 1)
+          const correctElement = elements[0]
+          assert.notStrictEqual(correctElement, null)
+          assert.notStrictEqual(typeof correctElement, `undefined`)
+          assert.strictEqual(correctElement.tagName, `H2`)
+          assert.strictEqual(correctElement.textContent, `Correct`)
+          done()
+        })
+      })
+
+    it(`should allow parent to DOM.select() an isolation boundary`, done => {
+      function app(sources) {
+        return {
+          DOM: Rx.Observable.just(
+            h3(`.top-most`, [
+              sources.DOM.isolateSink(Rx.Observable.just(
+                span(`.foo`, [
+                  h4(`.foo`, `Wrong`),
+                ])
+              ), `ISOLATION`),
+            ])
+          ),
+        }
+      }
+      let [sinks, sources] = run(app, {
+        DOM: makeDOMDriver(createRenderTarget()),
+      })
+      sources.DOM.select(`.foo`).observable.subscribe(elements => {
+        assert.strictEqual(Array.isArray(elements), true)
+        assert.strictEqual(elements.length, 1)
+        const correctElement = elements[0]
+        assert.notStrictEqual(correctElement, null)
+        assert.notStrictEqual(typeof correctElement, `undefined`)
+        assert.strictEqual(correctElement.tagName, `SPAN`)
+        done()
+      })
     })
   })
 })
