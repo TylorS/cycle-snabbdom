@@ -79,7 +79,7 @@ const makeDOMDriver =
 
         const rootElem$ =
           view$
-            .flatMap(parseTree)
+            .flatMapLatest(parseTree)
             .startWith(rootElem)
             .pairwise()
             .map(([prevView, newView]) => {
