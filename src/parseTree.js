@@ -1,5 +1,6 @@
 import Rx from 'rx'
 import map from 'fast.js/array/map'
+import filter from 'fast.js/array/filter'
 
 const combineVTreeStreams =
   (vTree, ...children) => ({
@@ -13,14 +14,19 @@ const combineVTreeStreams =
 
 const parseTree =
   vTree => {
-    if (vTree.observe) {
-      return vTree.flatMap(parseTree)
+    if (!vTree) {
+      return null
+    } else if (vTree.subscribe) {
+      return vTree.flatMapLatest(parseTree)
     } else if (`object` === typeof vTree) {
       const vtree$ = Rx.Observable.just(vTree)
       if (vTree.children && vTree.children.length > 0) {
         return Rx.Observable.combineLatest(
           vtree$,
-          ...map(vTree.children, parseTree),
+          ...filter(
+            map(vTree.children, parseTree),
+            x => x !== null
+          ),
           combineVTreeStreams
         )
       }
