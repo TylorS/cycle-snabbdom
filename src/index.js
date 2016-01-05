@@ -30,7 +30,7 @@ const isolateSink =
   (sink, scope) =>
     sink.map(
       vtree => {
-        const c = `${vtree.sel} cycle-scope-${scope}`.trim()
+        const c = `${vtree.sel}.cycle-scope-${scope}`.trim()
         vtree.sel = c
         return vtree
       }
