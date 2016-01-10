@@ -3,7 +3,7 @@ Alternative DOM driver utilizing the snabbdom library
 
 # Install
 ```js
-$ npm insall cycle-snabbdom
+$ npm install cycle-snabbdom
 ```
 
 This library implements all of the same API's that the standard Cycle-DOM driver implements, except currently Snabbdom does not have any decent way to render HTML. That means that this library is currently client-side only.
