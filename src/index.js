@@ -41,3 +41,9 @@ export {hJSX}
 
 import {makeDOMDriver} from './makeDOMDriver'
 export {makeDOMDriver}
+
+import {mockDOMSource} from './mockDOMSource'
+export {mockDOMSource}
+
+import {makeHTMLDriver} from './makeHTMLDriver'
+export {makeHTMLDriver}
