@@ -1,89 +1,73 @@
 # cycle-snabbdom [![Build Status](https://travis-ci.org/TylorS/cycle-snabbdom.svg?branch=master)](https://travis-ci.org/TylorS/cycle-snabbdom)
-Alternative DOM driver utilizing the snabbdom library
+Alternative DOM driver utilizing the [snabbdom](https://github.com/paldepind/snabbdom) library
 
 # Install
 ```js
 $ npm install cycle-snabbdom
 ```
+## API
 
-This library implements all of the same API's that the standard Cycle-DOM driver implements, except currently Snabbdom does not have any decent way to render HTML. That means that this library is currently client-side only.
+##### makeDOMDriver(container: string|Element, {modules?: Array<SnabbdomModules>})
 
-This library also exports the hyperscript-helpers for shorter view functions.
-# Examples
-
-##### Simple Counter
 ```js
-import Rx from 'rx'
-import {run} from '@cycle/core'
-import {makeDOMDriver, div, button, p} from 'cycle-snabbdom'
+import {makeDOMDriver} from 'cycle-snabbdom'
+```
 
-function main({DOM}) {
-  let action$ = Rx.Observable.merge(
-    DOM.select('.decrement').events('click').map(ev => -1),
-    DOM.select('.increment').events('click').map(ev => +1)
-  )
-  let count$ = action$.startWith(0).scan((x,y) => x+y)
-  return {
-    DOM: count$.map(count =>
-        div([
-          button('.decrement', 'Decrement'),
-          button('.increment', 'Increment'),
-          p('Counter: ' + count)
-        ])
-      )
-  }
-}
+##### makeHTMLDriver()
+```js
+import {makeHTMLDriver} from 'cycle-snabbdom'
+```
+##### h - thunk - hyperscript-helpers
+Shorcuts to `snabbdom/h`, `snabbdom/thunk` and `hyperscript-helpers`
+```js
+import {h, thunk, div, span, h4} from 'cycle-snabbdom'
+```
 
-run(app, {
-  DOM: makeDOMDriver('#app')
+##### modules : Array<SnabbdomModules>
+
+Shortcut to snabbdom modules.
+
+```js
+import Cycle from '@cycle/core'
+import {modules, makeDOMDriver} from 'cycle-snabbdom'
+const {
+  StyleModule, PropsModule,
+  AttrsModule, ClassModule,
+  HeroModule, EventsModule,
+} = modules
+...
+
+Cycle.run(main, {
+  DOM: makeDOMDriver('#app', {modules: [
+    StyleModule, PropsModule,
+    AttrsModule, ClassModule,
+    HeroModule, EventsModule
+  ]})
 })
+
 ```
 
-##### @cycle/isolate
+##### mockDOMSource()
+A testing utility which aids in creating a queryable collection of Observables. Call mockDOMSource giving it an object specifying selectors, eventTypes and their Observables, and get as output an object following the same format as the DOM Driver's source.
+
+Example:
 ```js
-import Rx from 'rx'
-import {run} from '@cycle/core'
-import {makeDOMDriver, div, h2} from 'cycle-snabbdom'
-import isolate from '@cycle/isolate';
+const userEvents = mockDOMSource({
+ '.foo': {
+   'click': Rx.Observable.just({target: {}}),
+   'mouseover': Rx.Observable.just({target: {}})
+ },
+ '.bar': {
+   'scroll': Rx.Observable.just({target: {}})
+ }
+});
 
-function bmiCalculator({DOM}) {
-  let weightProps$ = Rx.Observable.just({
-    label: 'Weight', unit: 'kg', min: 40, initial: 70, max: 140
-  });
-  let heightProps$ = Rx.Observable.just({
-    label: 'Height', unit: 'cm', min: 140, initial: 170, max: 210
-  });
-
-  // LabeledSlider is a dataflow component
-  // isolate(LabeledSlider) is an impure function: it generates
-  // a NEW dataflow component every time it is called.
-  let WeightSlider = isolate(LabeledSlider);
-  let HeightSlider = isolate(LabeledSlider);
-
-  let weightSlider = WeightSlider({DOM, props$: weightProps$});
-  let heightSlider = HeightSlider({DOM, props$: heightProps$});
-
-  let bmi$ = Rx.Observable.combineLatest(
-    weightSlider.value$,
-    heightSlider.value$,
-    (weight, height) => {
-      let heightMeters = height * 0.01;
-      let bmi = Math.round(weight / (heightMeters * heightMeters));
-      return bmi;
-    }
-  );
-
-  return {
-    DOM: bmi$.combineLatest(weightSlider.DOM, heightSlider.DOM,
-      (bmi, weightVTree, heightVTree) =>
-        div([
-          weightVTree,
-          heightVTree,
-          h2('BMI is ' + bmi)
-        ])
-      )
-  };
-}
-
-run(app, { DOM: makeDOMDriver('#app') })
+// Usage
+const click$ = userEvents.select('.foo').events('click');
 ```
+Arguments:
+
+mockedSelectors :: Object an object where keys are selector strings and values are objects. Those nested objects have eventType strings as keys and values are Observables you created.
+Return:
+
+(Object) fake DOM source object, containing a function select() which can be used just like the DOM Driver's source. Call select(selector).events(eventType) on the source object to get the Observable you defined in the input of mockDOMSource.
