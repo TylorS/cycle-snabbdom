@@ -247,7 +247,6 @@ describe('DOM Rendering', function () {
     });
 
     sources.DOM.select(':root').observable.take(1).subscribe(function (root) {
-      console.log(root)
       const selectEl = root.querySelector('.child');
       assert.notStrictEqual(selectEl, null);
       assert.notStrictEqual(typeof selectEl, 'undefined');
