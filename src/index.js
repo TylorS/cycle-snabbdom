@@ -36,9 +36,6 @@ export {
   th, thead, title, tr, u, ul, video,
 }
 
-import {html as hJSX} from 'snabbdom-jsx'
-export {hJSX}
-
 import {makeDOMDriver} from './makeDOMDriver'
 export {makeDOMDriver}
 
