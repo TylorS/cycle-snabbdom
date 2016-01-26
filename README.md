@@ -1,4 +1,4 @@
-# cycle-snabbdom
+# cycle-snabbdom [![Build Status](https://travis-ci.org/TylorS/cycle-snabbdom.svg?branch=master)](https://travis-ci.org/TylorS/cycle-snabbdom)
 Alternative DOM driver utilizing the snabbdom library
 
 # Install

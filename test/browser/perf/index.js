@@ -33,8 +33,7 @@ function InputCount(sources) {
 // CycleJSLogo component
 function CycleJSLogo(id) {
   return {
-    DOM: Rx.Observable.just(
-      h(`div`, {
+    DOM: h(`div`, {
         style: {
           alignItems: `center`,
           background: `url(cyclejs_logo.svg)`,
@@ -49,7 +48,6 @@ function CycleJSLogo(id) {
           width: `32px`
         }
       }, `${id}`)
-    )
   }
 }
 
@@ -65,7 +63,7 @@ function main(sources) {
   )
 
   return {
-    DOM: inputCount.value$.combineLatest(
+    DOM: inputCount.value$.zip(
       inputCount.DOM,
       component$s$,
       (value, inputCountVTree, componentDOMs) => h(`div`, [

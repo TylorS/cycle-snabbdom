@@ -1,4 +1,4 @@
-let Rx = require(`rx`)
+import Rx from 'rx'
 
 const disposableCreate = Rx.Disposable.create
 const CompositeDisposable = Rx.CompositeDisposable
@@ -47,4 +47,4 @@ function fromEvent(element, eventName, useCapture = false) {
   }).share()
 }
 
-module.exports = fromEvent
+export {fromEvent}
