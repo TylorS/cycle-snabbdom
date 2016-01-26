@@ -42,6 +42,8 @@
     "browserify": "^13.0.0",
     "eslint": "^1.10.3",
     "eslint-config-cycle": "^3.2.0",
+    "eslint-plugin-cycle": "^1.0.2",
+    "eslint-plugin-no-class": "^0.1.0",
     "mocha": "^2.3.4",
     "rx": "^4.0.7",
     "snabbdom-jsx": "^0.3.0",
