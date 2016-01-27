@@ -285,4 +285,26 @@ describe('DOM Rendering', function () {
         done();
       });
   });
+
+  it('should ignore `null` children values', function (done) {
+    function app(){
+      return {
+        DOM: Rx.Observable.just(div([
+          Rx.Observable.just(h4('Hello')),
+          null
+        ]))
+      }
+    }
+
+    const {sinks, sources} = Cycle.run(app, {
+      DOM: makeDOMDriver(createRenderTarget())
+    })
+
+    sources.DOM.observable.subscribe(function(root){
+      assert.strictEqual(root.children.length, 1);
+      sources.dispose();
+      sinks.dispose();
+      done();
+    })
+  });
 });
