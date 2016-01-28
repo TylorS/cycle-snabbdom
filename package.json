@@ -7,6 +7,9 @@
     "eslint": "eslint src/",
     "test-node": "mocha --compilers js:babel-core/register test/node",
     "test": "npm run eslint && npm run test-node && npm run test-browser",
+    "predist": "rm -rf dist/ && mkdir dist/",
+    "dist": "browserify -t [babelify --global] -t browserify-shim --exclude rx --standalone CycleSnabbdom src/index.js -o dist/cycle-snabbdom.js",
+    "postdist": "uglifyjs dist/cycle-snabbdom.js --compress --mangle -o dist/cycle-snabbdom.min.js",
     "compile-lib": "babel src/ -d lib/",
     "test-browser": "testem",
     "test-ci": "npm run test-node && testem ci",
@@ -30,6 +33,9 @@
     "url": "https://github.com/tylors/cycle-snabbdom/issues"
   },
   "homepage": "https://github.com/tylors/cycle-snabbdom#readme",
+  "browserify-shim": {
+    "rx": "global:Rx"
+  },
   "devDependencies": {
     "@cycle/core": "^6.0.0",
     "assert": "^1.3.0",
@@ -42,6 +48,7 @@
     "babel-preset-es2015": "^6.3.13",
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
+    "browserify-shim": "^3.8.12",
     "eslint": "^1.10.3",
     "eslint-config-cycle": "^3.2.0",
     "eslint-plugin-cycle": "^1.0.2",
@@ -49,7 +56,8 @@
     "mocha": "^2.3.4",
     "rx": "^4.0.7",
     "snabbdom-jsx": "^0.3.0",
-    "testem": "^0.9.11"
+    "testem": "^0.9.11",
+    "uglify-js": "^2.6.1"
   },
   "dependencies": {
     "hyperscript-helpers": "^2.0.3",
