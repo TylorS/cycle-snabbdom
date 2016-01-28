@@ -289,22 +289,72 @@ describe('DOM Rendering', function () {
   it('should ignore `null` children values', function (done) {
     function app(){
       return {
-        DOM: Rx.Observable.just(div([
+        DOM: Rx.Observable.just(div('.test', [
           Rx.Observable.just(h4('Hello')),
-          null
+          null,
         ]))
-      }
-    }
+      };
+    };
 
     const {sinks, sources} = Cycle.run(app, {
       DOM: makeDOMDriver(createRenderTarget())
-    })
+    });
 
     sources.DOM.observable.subscribe(function(root){
-      assert.strictEqual(root.children.length, 1);
+      const myElement = root.querySelector('.test')
+      assert.strictEqual(myElement.children.length, 1);
       sources.dispose();
       sinks.dispose();
       done();
-    })
+    });
+  });
+
+  it('should ignore `null` children values with no siblings', function (done) {
+    function app(){
+      return {
+        DOM: Rx.Observable.just(div('.test', [
+          null,
+          null,
+          null,
+        ]))
+      };
+    };
+
+    const {sinks, sources} = Cycle.run(app, {
+      DOM: makeDOMDriver(createRenderTarget())
+    });
+
+    sources.DOM.observable.subscribe(function(root){
+      const myElement = root.querySelector('.test')
+      assert.strictEqual(myElement.children.length, 0);
+      sources.dispose();
+      sinks.dispose();
+      done();
+    });
+  });
+
+  it('should ignore `null` children values with some siblings', function (done) {
+    function app(){
+      return {
+        DOM: Rx.Observable.just(div('.test', [
+          null,
+          Rx.Observable.just(div('Hello')),
+          Rx.Observable.just(h4('World')),
+          null,
+        ]))
+      };
+    };
+
+    const {sinks, sources} = Cycle.run(app, {
+      DOM: makeDOMDriver(createRenderTarget())
+    });
+
+    sources.DOM.observable.subscribe(function(root){
+      const myElement = root.querySelector('.test')
+      assert.strictEqual(myElement.children.length, 2);
+      sources.dispose();
+      sinks.dispose();
+      done();
+    });
   });
 });
