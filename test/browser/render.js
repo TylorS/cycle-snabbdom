@@ -1,7 +1,7 @@
 'use strict';
 /* global describe, it, beforeEach */
 let assert = require('assert');
-let Cycle = require('@cycle/core');
+let Cycle = require('@cycle/rx-run').default;
 let CycleDOM = require('../../src');
 let Fixture89 = require('./fixtures/issue-89');
 let Rx = require('rx');
@@ -30,16 +30,18 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.observable.subscribe(function (root) {
       const selectEl = root.querySelector('.my-class');
       assert.notStrictEqual(selectEl, null);
       assert.notStrictEqual(typeof selectEl, 'undefined');
       assert.strictEqual(selectEl.tagName, 'SELECT');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -58,16 +60,18 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select(':root').observable.take(1).subscribe(function (root) {
       const selectEl = root.querySelector('.my-class');
       assert.notStrictEqual(selectEl, null);
       assert.notStrictEqual(typeof selectEl, 'undefined');
       assert.strictEqual(selectEl.tagName, 'SELECT');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -89,9 +93,11 @@ describe('DOM Rendering', function () {
     }
 
     // Run it
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Assert it
     sources.DOM.select(':root').observable.skip(1).take(1).subscribe(function (root) {
@@ -100,7 +106,7 @@ describe('DOM Rendering', function () {
       assert.notStrictEqual(typeof selectEl, 'undefined');
       assert.strictEqual(selectEl.tagName, 'H4');
       assert.strictEqual(selectEl.textContent, 'Constantly hello0');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -113,9 +119,11 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.myelementclass').observable.first() // 1st
       .subscribe(function (elements) {
@@ -130,7 +138,7 @@ describe('DOM Rendering', function () {
         assert.notStrictEqual(myelement, null);
         assert.strictEqual(myelement.tagName, 'H3');
         assert.strictEqual(myelement.textContent, '456');
-        sources.dispose();
+        dispose();
         done();
       });
   });
@@ -143,9 +151,11 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.myelementclass').observable.first() // 1st
       .subscribe(function (elements) {
@@ -160,7 +170,7 @@ describe('DOM Rendering', function () {
         assert.notStrictEqual(myelement, null);
         assert.strictEqual(myelement.tagName, 'H3');
         assert.strictEqual(myelement.textContent, '456');
-        sources.dispose();
+        dispose();
         done();
       });
   });
@@ -178,9 +188,11 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select(':root').observable.take(1).subscribe(function (root) {
       const selectEl = root.querySelector('.child');
@@ -188,7 +200,7 @@ describe('DOM Rendering', function () {
       assert.notStrictEqual(typeof selectEl, 'undefined');
       assert.strictEqual(selectEl.tagName, 'H4');
       assert.strictEqual(selectEl.textContent, 'I am a kid');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -214,9 +226,11 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select(':root').observable.take(1).subscribe(function (root) {
       const selectEl = root.querySelector('.grandchild');
@@ -224,7 +238,7 @@ describe('DOM Rendering', function () {
       assert.notStrictEqual(typeof selectEl, 'undefined');
       assert.strictEqual(selectEl.tagName, 'H4');
       assert.strictEqual(selectEl.textContent, 'I am a baby');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -242,16 +256,18 @@ describe('DOM Rendering', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select(':root').observable.take(1).subscribe(function (root) {
       const selectEl = root.querySelector('.child');
       assert.notStrictEqual(selectEl, null);
       assert.notStrictEqual(typeof selectEl, 'undefined');
       assert.strictEqual(selectEl.tagName, 'g');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -269,7 +285,7 @@ describe('DOM Rendering', function () {
       };
     };
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
 
@@ -280,10 +296,10 @@ describe('DOM Rendering', function () {
       .sequenceEqual(expected)
       .subscribe((areSame) => {
         assert.strictEqual(areSame, true);
-        sources.dispose();
-        sinks.dispose();
         done();
       });
+
+    run();
   });
 
   it('should ignore `null` children values', function (done) {
@@ -296,15 +312,16 @@ describe('DOM Rendering', function () {
       };
     };
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.observable.subscribe(function(root){
       const myElement = root.querySelector('.test')
       assert.strictEqual(myElement.children.length, 1);
-      sources.dispose();
-      sinks.dispose();
+      dispose();
       done();
     });
   });
@@ -320,15 +337,16 @@ describe('DOM Rendering', function () {
       };
     };
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.observable.subscribe(function(root){
       const myElement = root.querySelector('.test')
       assert.strictEqual(myElement.children.length, 0);
-      sources.dispose();
-      sinks.dispose();
+      dispose();
       done();
     });
   });
@@ -345,15 +363,16 @@ describe('DOM Rendering', function () {
       };
     };
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.observable.subscribe(function(root){
       const myElement = root.querySelector('.test')
       assert.strictEqual(myElement.children.length, 2);
-      sources.dispose();
-      sinks.dispose();
+      dispose();
       done();
     });
   });

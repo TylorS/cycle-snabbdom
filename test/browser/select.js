@@ -1,7 +1,7 @@
 'use strict';
 /* global describe, it */
 let assert = require('assert');
-let Cycle = require('@cycle/core');
+let Cycle = require('@cycle/rx-run').default;
 let CycleDOM = require('../../src');
 let Fixture89 = require('./fixtures/issue-89');
 let Rx = require('rx');
@@ -30,9 +30,11 @@ describe('DOMSource.select()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select(':root').observable.take(1).subscribe(root => {
       const classNameRegex = /top\-most/;
@@ -40,7 +42,7 @@ describe('DOMSource.select()', function () {
       const child = root.children[0];
       assert.notStrictEqual(classNameRegex.exec(child.className), null);
       assert.strictEqual(classNameRegex.exec(child.className)[0], 'top-most');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -52,9 +54,11 @@ describe('DOMSource.select()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     const selection = sources.DOM.select('.myelementclass');
@@ -62,7 +66,7 @@ describe('DOMSource.select()', function () {
     assert.strictEqual(typeof selection.observable, 'object');
     assert.strictEqual(typeof selection.observable.subscribe, 'function');
     assert.strictEqual(typeof selection.events, 'function');
-    sources.dispose();
+    dispose();
     done();
   });
 
@@ -73,9 +77,11 @@ describe('DOMSource.select()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select('.myelementclass').observable.take(1)
@@ -88,7 +94,7 @@ describe('DOMSource.select()', function () {
         // Array with the H3 element
         assert.strictEqual(elements[0].tagName, 'H3');
         assert.strictEqual(elements[0].textContent, 'Foobar');
-        sources.dispose();
+        dispose();
         done();
       });
   });
@@ -107,9 +113,11 @@ describe('DOMSource.select()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select('.foo').select('.bar').observable.take(1)
@@ -120,7 +128,7 @@ describe('DOMSource.select()', function () {
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'H4');
         assert.strictEqual(element.textContent, 'Correct');
-        sources.dispose();
+        dispose();
         done();
       })
   });
@@ -141,9 +149,11 @@ describe('DOMSource.select()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     const selection = sources.DOM.select('.triangle').observable.take(1)
@@ -153,6 +163,7 @@ describe('DOMSource.select()', function () {
         assert.notStrictEqual(triangleElement, null);
         assert.notStrictEqual(typeof triangleElement, 'undefined');
         assert.strictEqual(triangleElement.tagName, 'polygon');
+        dispose();
         done();
       });
   });

@@ -37,7 +37,7 @@
     "rx": "global:Rx"
   },
   "devDependencies": {
-    "@cycle/core": "^6.0.0",
+    "@cycle/rx-run": "^7.0.0-rc1",
     "assert": "^1.3.0",
     "babel-cli": "^6.4.5",
     "babel-core": "^6.4.5",
