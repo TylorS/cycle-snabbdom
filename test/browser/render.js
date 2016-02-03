@@ -357,4 +357,28 @@ describe('DOM Rendering', function () {
       done();
     });
   });
+
+  it('should not wrap root vNode if it matches the render target', function (done) {
+    function app(){
+      return {
+        DOM: Rx.Observable.just(h('div.cycletest', {}, [
+          h('h4', {}, 'Hello'),
+        ]))
+      };
+    };
+
+    const {sinks, sources} = Cycle.run(app, {
+      DOM: makeDOMDriver(createRenderTarget())
+    });
+
+    sources.DOM.observable.subscribe(function(root){
+      const myElement = root;
+      assert.strictEqual(myElement.children.length, 1);
+      const myFirstChild = myElement.children[0];
+      assert.strictEqual(myFirstChild.children.length, 0);
+      sources.dispose();
+      sinks.dispose();
+      done();
+    });
+  });
 });
