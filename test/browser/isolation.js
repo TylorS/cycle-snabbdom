@@ -401,4 +401,74 @@ describe('isolation', function () {
      done();
    });
  });
+
+  it('should allow DOM.select()ing its own root without classname or id', function(done) {
+    function app(sources) {
+      return {
+        DOM: Rx.Observable.just(
+          h3('.top-most', [
+            sources.DOM.isolateSink(Rx.Observable.just(
+              span([
+                h4('.bar', 'Wrong')
+              ])
+            ), 'ISOLATION')
+          ])
+        )
+      };
+    }
+
+    const {sinks, sources} = Cycle.run(app, {
+      DOM: makeDOMDriver(createRenderTarget())
+    });
+
+    const {isolateSource} = sources.DOM;
+
+    isolateSource(sources.DOM, 'ISOLATION')
+      .select('span').observable
+      .take(1)
+      .subscribe(function (elements) {
+        assert.strictEqual(Array.isArray(elements), true);
+        assert.strictEqual(elements.length, 1);
+        const correctElement = elements[0];
+        assert.notStrictEqual(correctElement, null);
+        assert.notStrictEqual(typeof correctElement, 'undefined');
+        assert.strictEqual(correctElement.tagName, 'SPAN');
+        done();
+      });
+  });
+
+  it('should allow DOM.select()ing all ement with `*`', function(done) {
+    function app(sources) {
+      return {
+        DOM: Rx.Observable.just(
+          h3('.top-most', [
+            sources.DOM.isolateSink(Rx.Observable.just(
+              span([
+                h4('.bar', 'Wrong')
+              ])
+            ), 'ISOLATION')
+          ])
+        )
+      };
+    }
+
+    const {sinks, sources} = Cycle.run(app, {
+      DOM: makeDOMDriver(createRenderTarget())
+    });
+
+    const {isolateSource} = sources.DOM;
+
+    isolateSource(sources.DOM, 'ISOLATION')
+      .select('span').observable
+      .take(1)
+      .subscribe(function (elements) {
+        assert.strictEqual(Array.isArray(elements), true);
+        assert.strictEqual(elements.length, 1);
+        const correctElement = elements[0];
+        assert.notStrictEqual(correctElement, null);
+        assert.notStrictEqual(typeof correctElement, 'undefined');
+        assert.strictEqual(correctElement.tagName, 'SPAN');
+        done();
+      });
+  });
 });
