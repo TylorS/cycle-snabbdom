@@ -437,7 +437,7 @@ describe('isolation', function () {
       });
   });
 
-  it('should allow DOM.select()ing all ement with `*`', function(done) {
+  it('should allow DOM.select()ing all elements with `*`', function(done) {
     function app(sources) {
       return {
         DOM: Rx.Observable.just(
