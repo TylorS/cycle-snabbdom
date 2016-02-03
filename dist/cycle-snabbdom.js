@@ -3820,7 +3820,7 @@ function makeVNodeWrapper(rootElement) {
     var _vNodeDataProps$id = vNodeDataProps.id;
     var vNodeId = _vNodeDataProps$id === undefined ? selectorId : _vNodeDataProps$id;
 
-    var isVNodeAndRootElementIdentical = vNodeId === rootElement.id && selectorTagName === rootElement.tagName && vNodeClassName === rootElement.className;
+    var isVNodeAndRootElementIdentical = vNodeId.toUpperCase() === rootElement.id.toUpperCase() && selectorTagName.toUpperCase() === rootElement.tagName.toUpperCase() && vNodeClassName.toUpperCase() === rootElement.className.toUpperCase();
 
     if (isVNodeAndRootElementIdentical) {
       return vNode;
