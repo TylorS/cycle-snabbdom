@@ -19,9 +19,9 @@ function makeVNodeWrapper(rootElement) {
     const {id: vNodeId = selectorId} = vNodeDataProps
 
     const isVNodeAndRootElementIdentical =
-      vNodeId === rootElement.id &&
-      selectorTagName === rootElement.tagName &&
-      vNodeClassName === rootElement.className
+      vNodeId.toUpperCase() === rootElement.id.toUpperCase() &&
+      selectorTagName.toUpperCase() === rootElement.tagName.toUpperCase() &&
+      vNodeClassName.toUpperCase() === rootElement.className.toUpperCase()
 
     if (isVNodeAndRootElementIdentical) {
       return vNode
