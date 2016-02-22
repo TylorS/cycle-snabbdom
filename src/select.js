@@ -25,6 +25,19 @@ function makeIsStrictlyInRootScope(namespace) {
   }
 }
 
+const isValidString = param => typeof param === `string` && param.length > 0
+const startsWith = (string, start) => string[0] === start
+const isNotTagName = param =>
+    isValidString(param) && startsWith(param, `.`) || startsWith(param, `#`) ||
+    startsWith(param, `:`) || startsWith(param, `*`)
+
+function sortNamespace(a, b) {
+  if (isNotTagName(a) && isNotTagName(b)) {
+    return 0
+  }
+  return isNotTagName(a) ? 1 : -1
+}
+
 function makeElementSelector(rootElement$) {
   return function elementSelector(selector) {
     if (typeof selector !== `string`) {
@@ -36,7 +49,7 @@ function makeElementSelector(rootElement$) {
     const trimmedSelector = selector.trim()
     const childNamespace = trimmedSelector === `:root` ?
       namespace :
-      namespace.concat(trimmedSelector)
+      namespace.concat(trimmedSelector).sort(sortNamespace)
     const element$ = rootElement$.map(rootEl => {
       if (childNamespace.join(``) === ``) {
         return rootEl
