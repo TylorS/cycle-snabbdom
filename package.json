@@ -9,7 +9,7 @@
     "test": "npm run eslint && npm run test-node && npm run test-browser",
     "predist": "rm -rf dist/ && mkdir dist/",
     "dist": "browserify -t [babelify --global] -t browserify-shim --exclude rx --standalone CycleSnabbdom src/index.js -o dist/cycle-snabbdom.js",
-    "postdist": "uglifyjs dist/cycle-snabbdom.js --compress --mangle -o dist/cycle-snabbdom.min.js",
+    "postdist": "uglifyjs dist/cycle-snabbdom.js -o dist/cycle-snabbdom.min.js",
     "compile-lib": "babel src/ -d lib/",
     "test-browser": "testem",
     "test-ci": "npm run test-node && testem ci",
