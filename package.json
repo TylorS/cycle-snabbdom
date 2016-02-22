@@ -8,7 +8,7 @@
     "test-node": "mocha --compilers js:babel-core/register test/node",
     "test": "npm run eslint && npm run test-node && npm run test-browser",
     "predist": "rm -rf dist/ && mkdir dist/",
-    "dist": "browserify -t [babelify --global] -t browserify-shim --exclude rx --standalone CycleSnabbdom src/index.js -o dist/cycle-snabbdom.js",
+    "dist": "browserify -t [babelify --presets es2015] -t browserify-shim --exclude rx --standalone CycleSnabbdom src/index.js -o dist/cycle-snabbdom.js",
     "postdist": "uglifyjs dist/cycle-snabbdom.js -o dist/cycle-snabbdom.min.js",
     "compile-lib": "babel src/ -d lib/",
     "test-browser": "testem",
