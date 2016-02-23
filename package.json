@@ -1,6 +1,6 @@
 {
   "name": "cycle-snabbdom",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Snabbdom Driver for Cycle.js",
   "main": "lib/index.js",
   "scripts": {
