@@ -1,7 +1,7 @@
 'use strict';
 /* global describe, it, beforeEach */
 let assert = require('assert');
-let Cycle = require('@cycle/core');
+let Cycle = require('@cycle/rx-run').default;
 let CycleDOM = require('../../src');
 let Rx = require('rx');
 let {svg, div, input, p, span, h2, h3, h4, form, select, option, makeDOMDriver} = CycleDOM;
@@ -24,14 +24,16 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.myelementclass').events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
       assert.strictEqual(ev.target.textContent, 'Foobar');
-      sources.dispose();
+      dispose();
       done();
     });
     // Make assertions
@@ -53,15 +55,16 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget('parent-001'))
     });
 
+    const dispose = run();
     // Make assertions
     sources.DOM.select('#parent-001').events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
       assert.strictEqual(ev.target.textContent, 'Foobar');
-      sources.dispose();
+      dispose();
       done();
     });
 
@@ -83,15 +86,17 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget('parent-002'))
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select('#myElementId').events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
       assert.strictEqual(ev.target.textContent, 'Foobar');
-      sources.dispose();
+      dispose();
       done();
     });
 
@@ -116,15 +121,17 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
       assert.strictEqual(ev.target.textContent, 'Foobar');
-      sources.dispose();
+      dispose();
       done();
     });
 
@@ -153,15 +160,17 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select('.foo').select('.bar').events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
       assert.strictEqual(ev.target.textContent, 'Correct');
-      sources.dispose();
+      dispose();
       done();
     });
 
@@ -192,9 +201,11 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select('.clickable').events('click').elementAt(0)
@@ -207,7 +218,7 @@ describe('DOMSource.events()', function () {
       .subscribe(ev => {
         assert.strictEqual(ev.type, 'click');
         assert.strictEqual(ev.target.textContent, 'Second');
-        sources.dispose();
+        dispose();
         done();
       });
 
@@ -237,15 +248,17 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget('parent-002'))
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select('.blosh').events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
       assert.strictEqual(ev.target.textContent, 'Blosh');
-      sources.dispose();
+      dispose();
       done();
     });
 
@@ -273,9 +286,11 @@ describe('DOMSource.events()', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.parent').events('click').subscribe(ev => {
       assert.strictEqual(ev.type, 'click');
@@ -287,7 +302,7 @@ describe('DOMSource.events()', function () {
       const ownerTargetIsParentH2 =
         ev.ownerTarget.tagName === 'H2' && ev.ownerTarget.className === 'parent';
       assert.strictEqual(currentTargetIsParentH2 || ownerTargetIsParentH2, true);
-      sources.dispose();
+      dispose();
       done();
     });
     // Make assertions
@@ -314,9 +329,11 @@ describe('DOMSource.events()', function () {
       }
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.parent').events('reset').subscribe(ev => {
       assert.strictEqual(ev.type, 'reset');
@@ -353,9 +370,11 @@ describe('DOMSource.events()', function () {
       el.dispatchEvent(ev)
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.clickable').events('click', {useCapture: true})
       .subscribe(ev => {
@@ -390,9 +409,11 @@ describe('DOMSource.events()', function () {
       }
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.correct').events('blur', {useCapture: true})
       .subscribe(ev => {
@@ -430,9 +451,11 @@ describe('DOMSource.events()', function () {
       }
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.correct').events('blur')
       .subscribe(ev => {

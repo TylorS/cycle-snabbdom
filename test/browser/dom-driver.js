@@ -1,7 +1,7 @@
 'use strict';
 /* global describe, it */
 let assert = require('assert');
-let Cycle = require('@cycle/core');
+let Cycle = require('@cycle/rx-run').default;
 let CycleDOM = require('../../src');
 let Fixture89 = require('./fixtures/issue-89');
 let Rx = require('rx');
@@ -90,9 +90,9 @@ describe('DOM Driver', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget(), {onError: errorCallback})
-    });
+    }).run();
   });
 
   it('should have isolateSource() and isolateSink() in source', function (done) {
@@ -102,13 +102,14 @@ describe('DOM Driver', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
 
     assert.strictEqual(typeof sources.DOM.isolateSource, 'function');
     assert.strictEqual(typeof sources.DOM.isolateSink, 'function');
-    sources.dispose();
+    const dispose = run();
+    dispose();
     done();
   });
 
@@ -124,9 +125,11 @@ describe('DOM Driver', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select(':root').observable.skip(1).subscribe(function (root) {
       const selectEl = root.querySelector('.target');
@@ -135,8 +138,7 @@ describe('DOM Driver', function () {
       assert.strictEqual(selectEl.tagName, 'H3');
       assert.notStrictEqual(selectEl.textContent, '3');
       if (selectEl.textContent === '2') {
-        sources.dispose();
-        sinks.dispose();
+        dispose();
         setTimeout(() => {
           done();
         }, 100);

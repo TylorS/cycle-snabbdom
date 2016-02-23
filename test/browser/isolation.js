@@ -1,7 +1,7 @@
 'use strict';
 /* global describe, it, beforeEach */
 let assert = require('assert');
-let Cycle = require('@cycle/core');
+let Cycle = require('@cycle/rx-run').default;
 let CycleDOM = require('../../src');
 let Rx = require('rx');
 let {h, svg, div, p, span, h2, h3, h4, hJSX, select, option, makeDOMDriver} = CycleDOM;
@@ -31,10 +31,12 @@ describe('isolateSource', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
     const isolatedDOMSource = sources.DOM.isolateSource(sources.DOM, 'foo');
+
+    const dispose = run();
 
     // Make assertions
     isolatedDOMSource.select('.bar').observable.take(1).subscribe(elements => {
@@ -44,7 +46,7 @@ describe('isolateSource', function () {
       assert.notStrictEqual(typeof correctElement, 'undefined');
       assert.strictEqual(correctElement.tagName, 'H4');
       assert.strictEqual(correctElement.textContent, 'Correct');
-      sources.dispose();
+      dispose();
       done();
     });
   });
@@ -56,15 +58,17 @@ describe('isolateSource', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     const isolatedDOMSource = sources.DOM.isolateSource(sources.DOM, 'top-most');
     // Make assertions
     assert.strictEqual(typeof isolatedDOMSource.isolateSource, 'function');
     assert.strictEqual(typeof isolatedDOMSource.isolateSink, 'function');
-    sources.dispose();
+    dispose();
     done();
   });
 });
@@ -78,9 +82,11 @@ describe('isolateSink', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select(':root').observable.take(1)
@@ -90,7 +96,7 @@ describe('isolateSink', function () {
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'H3');
         assert.strictEqual(element.className, 'top-most cycle-scope-foo');
-        sources.dispose();
+        dispose();
         done();
       });
   });
@@ -103,9 +109,11 @@ describe('isolateSink', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select(':root').observable.take(1)
@@ -115,7 +123,7 @@ describe('isolateSink', function () {
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'H3');
         assert.strictEqual(element.className, 'cycle-scope-foo');
-        sources.dispose();
+        dispose();
         done();
       });
   });
@@ -139,9 +147,11 @@ describe('isolateSink', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     // Make assertions
     sources.DOM.select(':root').observable.skip(4).take(1)
@@ -151,7 +161,7 @@ describe('isolateSink', function () {
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'SPAN');
         assert.strictEqual(element.className, 'tab1 cycle-scope-1');
-        sources.dispose();
+        dispose();
         done();
       });
   });
@@ -174,9 +184,11 @@ describe('isolation', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sources.DOM.select('.bar').observable.take(1).subscribe(function (elements) {
       assert.strictEqual(Array.isArray(elements), true);
@@ -213,9 +225,11 @@ describe('isolation', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     sinks.island.take(1).subscribe(function (elements) {
       assert.strictEqual(Array.isArray(elements), true);
@@ -264,9 +278,11 @@ describe('isolation', function () {
       };
     }
 
-    const {sources, sinks} = Cycle.run(Monalisa, {
+    const {sources, sinks, run} = Cycle(Monalisa, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     const frameClick$ = sinks.frameClick.map(ev => ({
       type: ev.type,
@@ -291,7 +307,7 @@ describe('isolation', function () {
       ])
     ).subscribe(isEqual => {
       assert.strictEqual(isEqual, true);
-      sources.dispose();
+      dispose();
       done();
     });
 
@@ -337,9 +353,11 @@ describe('isolation', function () {
       };
     }
 
-    const {sinks, sources} = Cycle.run(app, {
+    const {sinks, sources, run} = Cycle(app, {
       DOM: makeDOMDriver(createRenderTarget())
     });
+
+    const dispose = run();
 
     const {isolateSource} = sources.DOM;
 
@@ -387,9 +405,11 @@ describe('isolation', function () {
      };
    }
 
-   const {sinks, sources} = Cycle.run(IsolatedApp, {
+   const {sinks, sources, run} = Cycle(IsolatedApp, {
      DOM: makeDOMDriver(createRenderTarget())
    });
+
+   const dispose = run();
 
    // Make assertions
    const selection = sinks.triangleElement.subscribe(elements => {

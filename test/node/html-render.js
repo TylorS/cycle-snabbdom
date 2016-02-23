@@ -1,7 +1,7 @@
 'use strict';
 /* global describe, it, beforeEach */
 let assert = require('assert');
-let Cycle = require('@cycle/core');
+let Cycle = require('@cycle/rx-run').default;
 let CycleDOM = require('../../src');
 let Rx = require('rx');
 let {div, h3, h, makeHTMLDriver} = CycleDOM;
@@ -13,13 +13,15 @@ describe('HTML Driver', function () {
         html: Rx.Observable.just(div('.test-element', ['Foobar']))
       };
     }
-    let {sinks, sources} = Cycle.run(app, {
+    let {sinks, sources, run} = Cycle(app, {
       html: makeHTMLDriver()
     });
     sources.html.subscribe(html => {
       assert.strictEqual(html, '<div class="test-element">Foobar</div>');
       done();
     });
+
+    run();
   });
 
   it('should make bogus select().events() as sources', function (done) {
@@ -31,13 +33,15 @@ describe('HTML Driver', function () {
         html: Rx.Observable.just(div('.test-element', ['Foobar']))
       };
     }
-    let {sinks, sources} = Cycle.run(app, {
+    let {sinks, sources, run} = Cycle(app, {
       html: makeHTMLDriver()
     });
     sources.html.subscribe(html => {
       assert.strictEqual(html, '<div class="test-element">Foobar</div>');
       done();
     });
+
+    run();
   });
 
   it('should output simple HTML Observable', function (done) {
@@ -46,13 +50,15 @@ describe('HTML Driver', function () {
         html: Rx.Observable.just(div('.test-element', ['Foobar']))
       };
     }
-    let {sinks, sources} = Cycle.run(app, {
+    let {sinks, sources, run} = Cycle(app, {
       html: makeHTMLDriver()
     });
     sources.html.subscribe(html => {
       assert.strictEqual(html, '<div class="test-element">Foobar</div>');
       done();
     });
+
+    run();
   });
 
   it('should render a simple nested vtree$ as HTML', function (done) {
@@ -63,7 +69,7 @@ describe('HTML Driver', function () {
         ]))
       };
     }
-    let {sinks, sources} = Cycle.run(app, {
+    let {sinks, sources, run} = Cycle(app, {
       DOM: makeHTMLDriver()
     });
     sources.DOM.subscribe(html => {
@@ -74,6 +80,8 @@ describe('HTML Driver', function () {
       );
       done();
     });
+
+    run();
   });
 
   it('should render double nested vtree$ as HTML', function (done) {
@@ -87,9 +95,9 @@ describe('HTML Driver', function () {
         ]))
       };
     }
-    let html$ = Cycle.run(app, { html: makeHTMLDriver() }).sources.html;
+    let {sources, run} = Cycle(app, { html: makeHTMLDriver() });
 
-    html$.subscribe(html => {
+    sources.html.subscribe(html => {
       assert.strictEqual(html,
         '<div class="test-element">' +
           '<div class="a-nice-element">' +
@@ -99,6 +107,7 @@ describe('HTML Driver', function () {
       );
       done();
     });
+    run();
   });
 
   it('should HTML-render a nested vtree$ with props', function (done) {
@@ -116,7 +125,7 @@ describe('HTML Driver', function () {
         )
       };
     }
-    let {sinks, sources} = Cycle.run(app, {
+    let {sinks, sources, run} = Cycle(app, {
       DOM: makeHTMLDriver()
     });
 
@@ -128,6 +137,8 @@ describe('HTML Driver', function () {
       );
       done();
     });
+
+    run();
   });
 
   it('should render a complex and nested vtree$ as HTML', function (done) {
@@ -151,7 +162,7 @@ describe('HTML Driver', function () {
         )
       };
     }
-    let {sinks, sources} = Cycle.run(app, {
+    let {sinks, sources, run} = Cycle(app, {
       html: makeHTMLDriver()
     });
 
@@ -174,5 +185,6 @@ describe('HTML Driver', function () {
       );
       done();
     });
+    run();
   });
 });
