@@ -79,4 +79,22 @@ describe('mockDOMSource', function () {
     userEvents.select('.foo').observable
       .subscribe(assert.fail, assert.fail, done);
   });
+
+  it('should return defined Observable when chaining .select()',
+    function (done) {
+    const mockedDOMSource = mockDOMSource({
+      '.bar': {
+        '.foo': {
+          '.baz': {
+            observable: Rx.Observable.just(135)
+          }
+        }
+      }
+    });
+    mockedDOMSource.select('.bar').select('.foo').select('.baz').observable
+      .subscribe(e => {
+        assert.strictEqual(e, 135);
+        done();
+      });
+  });
 });
