@@ -86,7 +86,7 @@ function makeSimulateBubbling(namespace, rootEl) {
 }
 
 function makeEventsSelector(rootElement$, namespace) {
-  return function eventsSelector(type, options) {
+  return function eventsSelector(type, options = {}) {
     if (typeof type !== `string`) {
       throw new Error(`DOM driver's events() expects argument to be a ` +
         `string representing the event type to listen for.`)
