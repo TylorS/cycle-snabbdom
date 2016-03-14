@@ -273,13 +273,11 @@ describe('DOM Rendering', function () {
       DOM: makeDOMDriver(createRenderTarget())
     });
 
-    const expected = Rx.Observable.from(['1/1','2/1','2/2'])
-
     sources.DOM.select('.target').observable
       .map(els => els[0].innerHTML)
-      .sequenceEqual(expected)
-      .subscribe((areSame) => {
-        assert.strictEqual(areSame, true);
+      .last()
+      .subscribe((html) => {
+        assert.strictEqual(html, '2/2');
         sources.dispose();
         sinks.dispose();
         done();
