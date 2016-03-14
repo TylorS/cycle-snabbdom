@@ -18,6 +18,24 @@ const eventTypesThatDontBubble = [
   `submit`,
   `change`,
   `reset`,
+  `timeupdate`,
+  `playing`,
+  `waiting`,
+  `seeking`,
+  `seeked`,
+  `ended`,
+  `loadedmetadata`,
+  `loadeddata`,
+  `canplay`,
+  `canplaythrough`,
+  `durationchange`,
+  `play`,
+  `pause`,
+  `ratechange`,
+  `volumechange`,
+  `suspend`,
+  `emptied`,
+  `stalled`,
 ]
 
 function maybeMutateEventPropagationAttributes(event) {
@@ -67,12 +85,8 @@ function makeSimulateBubbling(namespace, rootEl) {
   }
 }
 
-const defaults = {
-  useCapture: false,
-}
-
 function makeEventsSelector(rootElement$, namespace) {
-  return function eventsSelector(type, options = defaults) {
+  return function eventsSelector(type, options) {
     if (typeof type !== `string`) {
       throw new Error(`DOM driver's events() expects argument to be a ` +
         `string representing the event type to listen for.`)
