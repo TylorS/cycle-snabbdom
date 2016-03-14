@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 addons:
-  firefox: "41.0"
+  firefox: "latest"
 node_js:
   - "4"
   - "5"
