@@ -1326,7 +1326,7 @@ module.exports = forOwn;
 
 },{"lodash._basefor":4,"lodash._bindcallback":7,"lodash.keys":18}],15:[function(require,module,exports){
 /**
- * lodash 3.0.7 (Custom Build) <https://lodash.com/>
+ * lodash 3.0.8 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -1429,8 +1429,7 @@ function isArguments(value) {
  * // => false
  */
 function isArrayLike(value) {
-  return value != null &&
-    !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
+  return value != null && isLength(getLength(value)) && !isFunction(value);
 }
 
 /**
@@ -1478,8 +1477,8 @@ function isArrayLikeObject(value) {
  */
 function isFunction(value) {
   // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8 which returns 'object' for typed array constructors, and
-  // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+  // in Safari 8 which returns 'object' for typed array and weak map constructors,
+  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
   var tag = isObject(value) ? objectToString.call(value) : '';
   return tag == funcTag || tag == genTag;
 }
@@ -2571,7 +2570,9 @@ module.exports = function init(modules) {
 
     // Close tag, if needed
     if (VOID_ELEMENTS[tagName] !== true && !svg || svg && CONTAINER_ELEMENTS[tagName] === true) {
-      if (vnode.text) {
+      if (vnode.data.props && vnode.data.props.innerHTML) {
+        tag.push(vnode.data.props.innerHTML);
+      } else if (vnode.text) {
         tag.push(vnode.text);
       } else if (vnode.children) {
         vnode.children.forEach(function (child) {
@@ -2641,6 +2642,9 @@ function setAttributes(values, target) {
     }
     if (key === 'className') {
       target['class'] = value.split(' ');
+      return;
+    }
+    if (key === 'innerHTML') {
       return;
     }
     target[key] = value;
@@ -2776,13 +2780,69 @@ module.exports = function h(sel, b, c) {
   return VNode(sel, data, children, text, undefined);
 };
 
-},{"./is":33,"./vnode":40}],33:[function(require,module,exports){
+},{"./is":34,"./vnode":43}],33:[function(require,module,exports){
+function createElement(tagName){
+  return document.createElement(tagName);
+}
+
+function createElementNS(namespaceURI, qualifiedName){
+  return document.createElementNS(namespaceURI, qualifiedName);
+}
+
+function createTextNode(text){
+  return document.createTextNode(text);
+}
+
+
+function insertBefore(parentNode, newNode, referenceNode){
+  parentNode.insertBefore(newNode, referenceNode);
+}
+
+
+function removeChild(node, child){
+  node.removeChild(child);
+}
+
+function appendChild(node, child){
+  node.appendChild(child);
+}
+
+function parentNode(node){
+  return node.parentElement;
+}
+
+function nextSibling(node){
+  return node.nextSibling;
+}
+
+function tagName(node){
+  return node.tagName;
+}
+
+function setTextContent(node, text){
+  node.textContent = text;
+}
+
+module.exports = {
+  createElement: createElement,
+  createElementNS: createElementNS,
+  createTextNode: createTextNode,
+  appendChild: appendChild,
+  removeChild: removeChild,
+  insertBefore: insertBefore,
+  parentNode: parentNode,
+  nextSibling: nextSibling,
+  tagName: tagName,
+  setTextContent: setTextContent
+};
+
+},{}],34:[function(require,module,exports){
 module.exports = {
   array: Array.isArray,
   primitive: function(s) { return typeof s === 'string' || typeof s === 'number'; },
 };
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", 
                 "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", 
                 "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", 
@@ -2823,7 +2883,7 @@ function updateAttrs(oldVnode, vnode) {
 
 module.exports = {create: updateAttrs, update: updateAttrs};
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 function updateClass(oldVnode, vnode) {
   var cur, name, elm = vnode.elm,
       oldClass = oldVnode.data.class || {},
@@ -2843,7 +2903,7 @@ function updateClass(oldVnode, vnode) {
 
 module.exports = {create: updateClass, update: updateClass};
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var is = require('../is');
 
 function arrInvoker(arr) {
@@ -2886,7 +2946,161 @@ function updateEventListeners(oldVnode, vnode) {
 
 module.exports = {create: updateEventListeners, update: updateEventListeners};
 
-},{"../is":33}],37:[function(require,module,exports){
+},{"../is":34}],38:[function(require,module,exports){
+var raf = (typeof window !== `undefined` && window.requestAnimationFrame) || setTimeout;
+var nextFrame = function(fn) { raf(function() { raf(fn); }); };
+
+function setNextFrame(obj, prop, val) {
+  nextFrame(function() { obj[prop] = val; });
+}
+
+function getTextNodeRect(textNode) {
+  var rect;
+  if (document.createRange) {
+    var range = document.createRange();
+    range.selectNodeContents(textNode);
+    if (range.getBoundingClientRect) {
+        rect = range.getBoundingClientRect();
+    }
+  }
+  return rect;
+}
+
+function calcTransformOrigin(isTextNode, textRect, boundingRect) {
+  if (isTextNode) {
+    if (textRect) {
+      //calculate pixels to center of text from left edge of bounding box
+      var relativeCenterX = textRect.left + textRect.width/2 - boundingRect.left;
+      var relativeCenterY = textRect.top + textRect.height/2 - boundingRect.top;
+      return relativeCenterX + 'px ' + relativeCenterY + 'px';
+    }
+  }
+  return '0 0'; //top left
+}
+
+function getTextDx(oldTextRect, newTextRect) {
+  if (oldTextRect && newTextRect) {
+    return ((oldTextRect.left + oldTextRect.width/2) - (newTextRect.left + newTextRect.width/2));
+  }
+  return 0;
+}
+function getTextDy(oldTextRect, newTextRect) {
+  if (oldTextRect && newTextRect) {
+    return ((oldTextRect.top + oldTextRect.height/2) - (newTextRect.top + newTextRect.height/2));
+  }
+  return 0;
+}
+
+function isTextElement(elm) {
+  return elm.childNodes.length === 1 && elm.childNodes[0].nodeType === 3;
+}
+
+var removed, created;
+
+function pre(oldVnode, vnode) {
+  removed = {};
+  created = [];
+}
+
+function create(oldVnode, vnode) {
+  var hero = vnode.data.hero;
+  if (hero && hero.id) {
+    created.push(hero.id);
+    created.push(vnode);
+  }
+}
+
+function destroy(vnode) {
+  var hero = vnode.data.hero;
+  if (hero && hero.id) {
+    var elm = vnode.elm;
+    vnode.isTextNode = isTextElement(elm); //is this a text node?
+    vnode.boundingRect = elm.getBoundingClientRect(); //save the bounding rectangle to a new property on the vnode
+    vnode.textRect = vnode.isTextNode ? getTextNodeRect(elm.childNodes[0]) : null; //save bounding rect of inner text node
+    var computedStyle = window.getComputedStyle(elm, null); //get current styles (includes inherited properties)
+    vnode.savedStyle = JSON.parse(JSON.stringify(computedStyle)); //save a copy of computed style values
+    removed[hero.id] = vnode;
+  }
+}
+
+function post() {
+  var i, id, newElm, oldVnode, oldElm, hRatio, wRatio,
+      oldRect, newRect, dx, dy, origTransform, origTransition,
+      newStyle, oldStyle, newComputedStyle, isTextNode,
+      newTextRect, oldTextRect;
+  for (i = 0; i < created.length; i += 2) {
+    id = created[i];
+    newElm = created[i+1].elm;
+    oldVnode = removed[id];
+    if (oldVnode) {
+      isTextNode = oldVnode.isTextNode && isTextElement(newElm); //Are old & new both text?
+      newStyle = newElm.style;
+      newComputedStyle = window.getComputedStyle(newElm, null); //get full computed style for new element
+      oldElm = oldVnode.elm;
+      oldStyle = oldElm.style;
+      //Overall element bounding boxes
+      newRect = newElm.getBoundingClientRect();
+      oldRect = oldVnode.boundingRect; //previously saved bounding rect
+      //Text node bounding boxes & distances
+      if (isTextNode) {
+        newTextRect = getTextNodeRect(newElm.childNodes[0]);
+        oldTextRect = oldVnode.textRect;
+        dx = getTextDx(oldTextRect, newTextRect);
+        dy = getTextDy(oldTextRect, newTextRect);
+      } else {
+        //Calculate distances between old & new positions
+        dx = oldRect.left - newRect.left;
+        dy = oldRect.top - newRect.top;
+      }
+      hRatio = newRect.height / (Math.max(oldRect.height, 1));
+      wRatio = isTextNode ? hRatio : newRect.width / (Math.max(oldRect.width, 1)); //text scales based on hRatio
+      // Animate new element
+      origTransform = newStyle.transform;
+      origTransition = newStyle.transition;
+      if (newComputedStyle.display === 'inline') //inline elements cannot be transformed
+        newStyle.display = 'inline-block';        //this does not appear to have any negative side effects
+      newStyle.transition = origTransition + 'transform 0s';
+      newStyle.transformOrigin = calcTransformOrigin(isTextNode, newTextRect, newRect);
+      newStyle.opacity = '0';
+      newStyle.transform = origTransform + 'translate('+dx+'px, '+dy+'px) ' +
+                               'scale('+1/wRatio+', '+1/hRatio+')';
+      setNextFrame(newStyle, 'transition', origTransition);
+      setNextFrame(newStyle, 'transform', origTransform);
+      setNextFrame(newStyle, 'opacity', '1');
+      // Animate old element
+      for (var key in oldVnode.savedStyle) { //re-apply saved inherited properties
+        if (parseInt(key) != key) {
+          var ms = key.substring(0,2) === 'ms';
+          var moz = key.substring(0,3) === 'moz';
+          var webkit = key.substring(0,6) === 'webkit';
+      	  if (!ms && !moz && !webkit) //ignore prefixed style properties
+        	  oldStyle[key] = oldVnode.savedStyle[key];
+        }
+      }
+      oldStyle.position = 'absolute';
+      oldStyle.top = oldRect.top + 'px'; //start at existing position
+      oldStyle.left = oldRect.left + 'px';
+      oldStyle.width = oldRect.width + 'px'; //Needed for elements who were sized relative to their parents
+      oldStyle.height = oldRect.height + 'px'; //Needed for elements who were sized relative to their parents
+      oldStyle.margin = 0; //Margin on hero element leads to incorrect positioning
+      oldStyle.transformOrigin = calcTransformOrigin(isTextNode, oldTextRect, oldRect);
+      oldStyle.transform = '';
+      oldStyle.opacity = '1';
+      document.body.appendChild(oldElm);
+      setNextFrame(oldStyle, 'transform', 'translate('+ -dx +'px, '+ -dy +'px) scale('+wRatio+', '+hRatio+')'); //scale must be on far right for translate to be correct
+      setNextFrame(oldStyle, 'opacity', '0');
+      oldElm.addEventListener('transitionend', function(ev) {
+        if (ev.propertyName === 'transform')
+          document.body.removeChild(ev.target);
+      });
+    }
+  }
+  removed = created = undefined;
+}
+
+module.exports = {pre: pre, create: create, destroy: destroy, post: post};
+
+},{}],39:[function(require,module,exports){
 function updateProps(oldVnode, vnode) {
   var key, cur, old, elm = vnode.elm,
       oldProps = oldVnode.data.props || {}, props = vnode.data.props || {};
@@ -2906,20 +3120,83 @@ function updateProps(oldVnode, vnode) {
 
 module.exports = {create: updateProps, update: updateProps};
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
+var raf = (typeof window !== `undefined` && window.requestAnimationFrame) || setTimeout;
+var nextFrame = function(fn) { raf(function() { raf(fn); }); };
+
+function setNextFrame(obj, prop, val) {
+  nextFrame(function() { obj[prop] = val; });
+}
+
+function updateStyle(oldVnode, vnode) {
+  var cur, name, elm = vnode.elm,
+      oldStyle = oldVnode.data.style || {},
+      style = vnode.data.style || {},
+      oldHasDel = 'delayed' in oldStyle;
+  for (name in oldStyle) {
+    if (!style[name]) {
+      elm.style[name] = '';
+    }
+  }
+  for (name in style) {
+    cur = style[name];
+    if (name === 'delayed') {
+      for (name in style.delayed) {
+        cur = style.delayed[name];
+        if (!oldHasDel || cur !== oldStyle.delayed[name]) {
+          setNextFrame(elm.style, name, cur);
+        }
+      }
+    } else if (name !== 'remove' && cur !== oldStyle[name]) {
+      elm.style[name] = cur;
+    }
+  }
+}
+
+function applyDestroyStyle(vnode) {
+  var style, name, elm = vnode.elm, s = vnode.data.style;
+  if (!s || !(style = s.destroy)) return;
+  for (name in style) {
+    elm.style[name] = style[name];
+  }
+}
+
+function applyRemoveStyle(vnode, rm) {
+  var s = vnode.data.style;
+  if (!s || !s.remove) {
+    rm();
+    return;
+  }
+  var name, elm = vnode.elm, idx, i = 0, maxDur = 0,
+      compStyle, style = s.remove, amount = 0, applied = [];
+  for (name in style) {
+    applied.push(name);
+    elm.style[name] = style[name];
+  }
+  compStyle = getComputedStyle(elm);
+  var props = compStyle['transition-property'].split(', ');
+  for (; i < props.length; ++i) {
+    if(applied.indexOf(props[i]) !== -1) amount++;
+  }
+  elm.addEventListener('transitionend', function(ev) {
+    if (ev.target === elm) --amount;
+    if (amount === 0) rm();
+  });
+}
+
+module.exports = {create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle};
+
+},{}],41:[function(require,module,exports){
 // jshint newcap: false
 /* global require, module, document, Node */
 'use strict';
 
 var VNode = require('./vnode');
 var is = require('./is');
+var domApi = require('./htmldomapi.js');
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
-
-function emptyNodeAt(elm) {
-  return VNode(elm.tagName, {}, [], undefined, elm);
-}
 
 var emptyNode = VNode('', {}, [], undefined, undefined);
 
@@ -2936,16 +3213,13 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map;
 }
 
-function createRmCb(childElm, listeners) {
-  return function() {
-    if (--listeners === 0) childElm.parentElement.removeChild(childElm);
-  };
-}
-
 var hooks = ['create', 'update', 'remove', 'destroy', 'pre', 'post'];
 
-function init(modules) {
+function init(modules, api) {
   var i, j, cbs = {};
+
+  if (isUndef(api)) api = domApi;
+
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = [];
     for (j = 0; j < modules.length; ++j) {
@@ -2953,11 +3227,27 @@ function init(modules) {
     }
   }
 
+  function emptyNodeAt(elm) {
+    return VNode(api.tagName(elm).toLowerCase(), {}, [], undefined, elm);
+  }
+
+  function createRmCb(childElm, listeners) {
+    return function() {
+      if (--listeners === 0) {
+        var parent = api.parentNode(childElm);
+        api.removeChild(parent, childElm);
+      }
+    };
+  }
+
   function createElm(vnode, insertedVnodeQueue) {
-    var i, data = vnode.data;
+    var i, thunk, data = vnode.data;
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.init)) i(vnode);
-      if (isDef(i = data.vnode)) vnode = i;
+      if (isDef(i = data.vnode)) {
+          thunk = vnode;
+          vnode = i;
+      }
     }
     var elm, children = vnode.children, sel = vnode.sel;
     if (isDef(sel)) {
@@ -2967,16 +3257,16 @@ function init(modules) {
       var hash = hashIdx > 0 ? hashIdx : sel.length;
       var dot = dotIdx > 0 ? dotIdx : sel.length;
       var tag = hashIdx !== -1 || dotIdx !== -1 ? sel.slice(0, Math.min(hash, dot)) : sel;
-      elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? document.createElementNS(i, tag)
-                                                          : document.createElement(tag);
+      elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? api.createElementNS(i, tag)
+                                                          : api.createElement(tag);
       if (hash < dot) elm.id = sel.slice(hash + 1, dot);
       if (dotIdx > 0) elm.className = sel.slice(dot+1).replace(/\./g, ' ');
       if (is.array(children)) {
         for (i = 0; i < children.length; ++i) {
-          elm.appendChild(createElm(children[i], insertedVnodeQueue));
+          api.appendChild(elm, createElm(children[i], insertedVnodeQueue));
         }
       } else if (is.primitive(vnode.text)) {
-        elm.appendChild(document.createTextNode(vnode.text));
+        api.appendChild(elm, api.createTextNode(vnode.text));
       }
       for (i = 0; i < cbs.create.length; ++i) cbs.create[i](emptyNode, vnode);
       i = vnode.data.hook; // Reuse variable
@@ -2985,27 +3275,29 @@ function init(modules) {
         if (i.insert) insertedVnodeQueue.push(vnode);
       }
     } else {
-      elm = vnode.elm = document.createTextNode(vnode.text);
+      elm = vnode.elm = api.createTextNode(vnode.text);
     }
+    if (isDef(thunk)) thunk.elm = vnode.elm;
     return vnode.elm;
   }
 
   function addVnodes(parentElm, before, vnodes, startIdx, endIdx, insertedVnodeQueue) {
     for (; startIdx <= endIdx; ++startIdx) {
-      parentElm.insertBefore(createElm(vnodes[startIdx], insertedVnodeQueue), before);
+      api.insertBefore(parentElm, createElm(vnodes[startIdx], insertedVnodeQueue), before);
     }
   }
 
   function invokeDestroyHook(vnode) {
-    var i = vnode.data, j;
-    if (isDef(i)) {
-      if (isDef(i = i.hook) && isDef(i = i.destroy)) i(vnode);
+    var i, j, data = vnode.data;
+    if (isDef(data)) {
+      if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode);
       for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode);
       if (isDef(i = vnode.children)) {
         for (j = 0; j < vnode.children.length; ++j) {
           invokeDestroyHook(vnode.children[j]);
         }
       }
+      if (isDef(i = data.vnode)) invokeDestroyHook(i);
     }
   }
 
@@ -3024,7 +3316,7 @@ function init(modules) {
             rm();
           }
         } else { // Text node
-          parentElm.removeChild(ch.elm);
+          api.removeChild(parentElm, ch.elm);
         }
       }
     }
@@ -3055,25 +3347,25 @@ function init(modules) {
         newEndVnode = newCh[--newEndIdx];
       } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
         patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue);
-        parentElm.insertBefore(oldStartVnode.elm, oldEndVnode.elm.nextSibling);
+        api.insertBefore(parentElm, oldStartVnode.elm, api.nextSibling(oldEndVnode.elm));
         oldStartVnode = oldCh[++oldStartIdx];
         newEndVnode = newCh[--newEndIdx];
       } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
         patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue);
-        parentElm.insertBefore(oldEndVnode.elm, oldStartVnode.elm);
+        api.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm);
         oldEndVnode = oldCh[--oldEndIdx];
         newStartVnode = newCh[++newStartIdx];
       } else {
         if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
         idxInOld = oldKeyToIdx[newStartVnode.key];
         if (isUndef(idxInOld)) { // New element
-          parentElm.insertBefore(createElm(newStartVnode, insertedVnodeQueue), oldStartVnode.elm);
+          api.insertBefore(parentElm, createElm(newStartVnode, insertedVnodeQueue), oldStartVnode.elm);
           newStartVnode = newCh[++newStartIdx];
         } else {
           elmToMove = oldCh[idxInOld];
           patchVnode(elmToMove, newStartVnode, insertedVnodeQueue);
           oldCh[idxInOld] = undefined;
-          parentElm.insertBefore(elmToMove.elm, oldStartVnode.elm);
+          api.insertBefore(parentElm, elmToMove.elm, oldStartVnode.elm);
           newStartVnode = newCh[++newStartIdx];
         }
       }
@@ -3092,9 +3384,20 @@ function init(modules) {
       i(oldVnode, vnode);
     }
     if (isDef(i = oldVnode.data) && isDef(i = i.vnode)) oldVnode = i;
-    if (isDef(i = vnode.data) && isDef(i = i.vnode)) vnode = i;
+    if (isDef(i = vnode.data) && isDef(i = i.vnode)) {
+      patchVnode(oldVnode, i, insertedVnodeQueue);
+      vnode.elm = i.elm;
+      return;
+    }
     var elm = vnode.elm = oldVnode.elm, oldCh = oldVnode.children, ch = vnode.children;
     if (oldVnode === vnode) return;
+    if (!sameVnode(oldVnode, vnode)) {
+      var parentElm = api.parentNode(oldVnode.elm);
+      elm = createElm(vnode, insertedVnodeQueue);
+      api.insertBefore(parentElm, elm, oldVnode.elm);
+      removeVnodes(parentElm, [oldVnode], 0, 0);
+      return;
+    }
     if (isDef(vnode.data)) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode);
       i = vnode.data.hook;
@@ -3104,15 +3407,15 @@ function init(modules) {
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue);
       } else if (isDef(ch)) {
-        if (isDef(oldVnode.text)) elm.textContent = '';
+        if (isDef(oldVnode.text)) api.setTextContent(elm, '');
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue);
       } else if (isDef(oldCh)) {
         removeVnodes(elm, oldCh, 0, oldCh.length - 1);
       } else if (isDef(oldVnode.text)) {
-        elm.textContent = '';
+        api.setTextContent(elm, '');
       }
     } else if (oldVnode.text !== vnode.text) {
-      elm.textContent = vnode.text;
+      api.setTextContent(elm, vnode.text);
     }
     if (isDef(hook) && isDef(i = hook.postpatch)) {
       i(oldVnode, vnode);
@@ -3120,20 +3423,28 @@ function init(modules) {
   }
 
   return function(oldVnode, vnode) {
-    var i;
+    var i, elm, parent;
     var insertedVnodeQueue = [];
     for (i = 0; i < cbs.pre.length; ++i) cbs.pre[i]();
-    if (oldVnode.nodeType === Node.ELEMENT_NODE) {
-      if (oldVnode.parentElement !== null) {
-        createElm(vnode, insertedVnodeQueue);
-        oldVnode.parentElement.replaceChild(vnode.elm, oldVnode);
-      } else {
-        oldVnode = emptyNodeAt(oldVnode);
-        patchVnode(oldVnode, vnode, insertedVnodeQueue);
-      }
-    } else {
-      patchVnode(oldVnode, vnode, insertedVnodeQueue);
+
+    if (isUndef(oldVnode.sel)) {
+      oldVnode = emptyNodeAt(oldVnode);
     }
+
+    if (sameVnode(oldVnode, vnode)) {
+      patchVnode(oldVnode, vnode, insertedVnodeQueue);
+    } else {
+      elm = oldVnode.elm;
+      parent = api.parentNode(elm);
+
+      createElm(vnode, insertedVnodeQueue);
+
+      if (parent !== null) {
+        api.insertBefore(parent, vnode.elm, api.nextSibling(elm));
+        removeVnodes(parent, [oldVnode], 0, 0);
+      }
+    }
+
     for (i = 0; i < insertedVnodeQueue.length; ++i) {
       insertedVnodeQueue[i].data.hook.insert(insertedVnodeQueue[i]);
     }
@@ -3144,7 +3455,7 @@ function init(modules) {
 
 module.exports = {init: init};
 
-},{"./is":33,"./vnode":40}],39:[function(require,module,exports){
+},{"./htmldomapi.js":33,"./is":34,"./vnode":43}],42:[function(require,module,exports){
 var h = require('./h');
 
 function init(thunk) {
@@ -3156,7 +3467,7 @@ function prepatch(oldThunk, thunk) {
   var i, old = oldThunk.data, cur = thunk.data;
   var oldArgs = old.args, args = cur.args;
   cur.vnode = old.vnode;
-  if (oldArgs.length !== args.length) {
+  if (old.fn !== cur.fn || oldArgs.length !== args.length) {
     cur.vnode = cur.fn.apply(undefined, args);
     return;
   }
@@ -3179,14 +3490,14 @@ module.exports = function(name, fn /* args */) {
   });
 };
 
-},{"./h":32}],40:[function(require,module,exports){
+},{"./h":32}],43:[function(require,module,exports){
 module.exports = function(sel, data, children, text, elm) {
   var key = data === undefined ? undefined : data.key;
   return {sel: sel, data: data, children: children,
           text: text, elm: elm, key: key};
 };
 
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3198,14 +3509,14 @@ var _fromEvent = require('./fromEvent');
 
 var _select = require('./select');
 
-var matchesSelector = undefined;
+var matchesSelector = void 0;
 try {
   matchesSelector = require('matches-selector');
 } catch (e) {
   matchesSelector = function matchesSelector() {};
 }
 
-var eventTypesThatDontBubble = ['load', 'unload', 'focus', 'blur', 'mouseenter', 'mouseleave', 'submit', 'change', 'reset'];
+var eventTypesThatDontBubble = ['load', 'unload', 'focus', 'blur', 'mouseenter', 'mouseleave', 'submit', 'change', 'reset', 'timeupdate', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'durationchange', 'play', 'pause', 'ratechange', 'volumechange', 'suspend', 'emptied', 'stalled'];
 
 function maybeMutateEventPropagationAttributes(event) {
   if (!event.hasOwnProperty('propagationHasBeenStopped')) {
@@ -3256,13 +3567,9 @@ function makeSimulateBubbling(namespace, rootEl) {
   };
 }
 
-var defaults = {
-  useCapture: false
-};
-
 function makeEventsSelector(rootElement$, namespace) {
   return function eventsSelector(type) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? defaults : arguments[1];
+    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
     if (typeof type !== 'string') {
       throw new Error('DOM driver\'s events() expects argument to be a ' + 'string representing the event type to listen for.');
@@ -3287,7 +3594,7 @@ function makeEventsSelector(rootElement$, namespace) {
 
 exports.makeEventsSelector = makeEventsSelector;
 
-},{"./fromEvent":42,"./select":52,"matches-selector":22}],42:[function(require,module,exports){
+},{"./fromEvent":45,"./select":53,"matches-selector":22}],45:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3362,7 +3669,7 @@ function fromEvent(element, eventName) {
 exports.fromEvent = fromEvent;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],43:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3437,7 +3744,7 @@ function h(sel, b, c) {
 
 exports.default = h;
 
-},{"snabbdom/is":33,"snabbdom/vnode":40}],44:[function(require,module,exports){
+},{"snabbdom/is":34,"snabbdom/vnode":43}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3679,7 +3986,7 @@ exports.makeDOMDriver = _makeDOMDriver.makeDOMDriver;
 exports.mockDOMSource = _mockDOMSource.mockDOMSource;
 exports.makeHTMLDriver = _makeHTMLDriver.makeHTMLDriver;
 
-},{"./hyperscript":43,"./makeDOMDriver":46,"./makeHTMLDriver":47,"./mockDOMSource":48,"./modules":50,"hyperscript-helpers":2,"snabbdom/thunk":39}],45:[function(require,module,exports){
+},{"./hyperscript":46,"./makeDOMDriver":49,"./makeHTMLDriver":50,"./mockDOMSource":51,"./modules":52,"hyperscript-helpers":2,"snabbdom/thunk":42}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3713,7 +4020,7 @@ var isolateSink = function isolateSink(sink, scope) {
 exports.isolateSink = isolateSink;
 exports.isolateSource = isolateSource;
 
-},{"./utils":54}],46:[function(require,module,exports){
+},{"./utils":55}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3849,7 +4156,7 @@ function makeDOMDriver(container) {
 
 exports.makeDOMDriver = makeDOMDriver;
 
-},{"./events":41,"./isolate":45,"./modules":50,"./select":52,"./transposition":53,"./utils":54,"snabbdom":38,"snabbdom-selector/lib/classNameFromVNode":23,"snabbdom-selector/lib/selectorParser":24,"snabbdom/h":32}],47:[function(require,module,exports){
+},{"./events":44,"./isolate":48,"./modules":52,"./select":53,"./transposition":54,"./utils":55,"snabbdom":41,"snabbdom-selector/lib/classNameFromVNode":23,"snabbdom-selector/lib/selectorParser":24,"snabbdom/h":32}],50:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3892,7 +4199,7 @@ function makeHTMLDriver() {
 exports.makeHTMLDriver = makeHTMLDriver;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transposition":53,"snabbdom-to-html":26}],48:[function(require,module,exports){
+},{"./transposition":54,"snabbdom-to-html":26}],51:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3920,29 +4227,38 @@ function getEventsStreamForSelector(mockedEventTypes) {
   };
 }
 
+function makeMockSelector(mockedSelectors) {
+  return function select(selector) {
+    for (var key in mockedSelectors) {
+      if (mockedSelectors.hasOwnProperty(key) && key === selector) {
+        var observable = emptyStream;
+        if (mockedSelectors[key].hasOwnProperty('observable')) {
+          observable = mockedSelectors[key].observable;
+        }
+        return {
+          observable: observable,
+          select: makeMockSelector(mockedSelectors[key]),
+          events: getEventsStreamForSelector(mockedSelectors[key])
+        };
+      }
+    }
+    return {
+      observable: emptyStream,
+      events: function events() {
+        return emptyStream;
+      }
+    };
+  };
+}
+
 function mockDOMSource() {
   var mockedSelectors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
   return {
-    select: function select(selector) {
-      for (var key in mockedSelectors) {
-        if (mockedSelectors.hasOwnProperty(key) && key === selector) {
-          var observable = emptyStream;
-          if (mockedSelectors[key].hasOwnProperty('observable')) {
-            observable = mockedSelectors[key].observable;
-          }
-          return {
-            observable: observable,
-            events: getEventsStreamForSelector(mockedSelectors[key])
-          };
-        }
-      }
-      return {
-        observable: emptyStream,
-        events: function events() {
-          return emptyStream;
-        }
-      };
+    observable: emptyStream,
+    select: makeMockSelector(mockedSelectors),
+    events: function events() {
+      return emptyStream;
     }
   };
 }
@@ -3950,202 +4266,7 @@ function mockDOMSource() {
 exports.mockDOMSource = mockDOMSource;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],49:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var raf = undefined;
-if (typeof window !== 'undefined') {
-  raf = window && window.requestAnimationFrame || setTimeout;
-} else {
-  raf = setTimeout;
-}
-
-var nextFrame = function nextFrame(fn) {
-  return raf(function () {
-    return raf(fn);
-  });
-};
-/* eslint-disable */
-function setNextFrame(obj, prop, val) {
-  nextFrame(function () {
-    obj[prop] = val;
-  });
-}
-
-function getTextNodeRect(textNode) {
-  var rect = undefined;
-  if (document.createRange) {
-    var range = document.createRange();
-    range.selectNodeContents(textNode);
-    if (range.getBoundingClientRect) {
-      rect = range.getBoundingClientRect();
-    }
-  }
-  return rect;
-}
-
-function calcTransformOrigin(isTextNode, textRect, boundingRect) {
-  if (isTextNode) {
-    if (textRect) {
-      //calculate pixels to center of text from left edge of bounding box
-      var relativeCenterX = textRect.left + textRect.width / 2 - boundingRect.left;
-      var relativeCenterY = textRect.top + textRect.height / 2 - boundingRect.top;
-      return relativeCenterX + 'px ' + relativeCenterY + 'px';
-    }
-  }
-  return '0 0'; //top left
-}
-
-function getTextDx(oldTextRect, newTextRect) {
-  if (oldTextRect && newTextRect) {
-    return oldTextRect.left + oldTextRect.width / 2 - (newTextRect.left + newTextRect.width / 2);
-  }
-  return 0;
-}
-
-function getTextDy(oldTextRect, newTextRect) {
-  if (oldTextRect && newTextRect) {
-    return oldTextRect.top + oldTextRect.height / 2 - (newTextRect.top + newTextRect.height / 2);
-  }
-  return 0;
-}
-
-function isTextElement(elm) {
-  return elm.childNodes.length === 1 && elm.childNodes[0].nodeType === 3;
-}
-
-var removed = undefined,
-    created = undefined;
-
-function pre(oldVnode, vnode) {
-  removed = {};
-  created = [];
-}
-
-function create(oldVnode, vnode) {
-  var hero = vnode.data.hero;
-  if (hero && hero.id) {
-    created.push(hero.id);
-    created.push(vnode);
-  }
-}
-
-function destroy(vnode) {
-  var hero = vnode.data.hero;
-  if (hero && hero.id) {
-    var elm = vnode.elm;
-    vnode.isTextNode = isTextElement(elm); //is this a text node?
-    vnode.boundingRect = elm.getBoundingClientRect(); //save the bounding rectangle to a new property on the vnode
-    vnode.textRect = vnode.isTextNode ? getTextNodeRect(elm.childNodes[0]) : null; //save bounding rect of inner text node
-    var computedStyle = window.getComputedStyle(elm, null); //get current styles (includes inherited properties)
-    vnode.savedStyle = JSON.parse(JSON.stringify(computedStyle)); //save a copy of computed style values
-    removed[hero.id] = vnode;
-  }
-}
-
-function post() {
-  var i = undefined,
-      id = undefined,
-      newElm = undefined,
-      oldVnode = undefined,
-      oldElm = undefined,
-      hRatio = undefined,
-      wRatio = undefined,
-      oldRect = undefined,
-      newRect = undefined,
-      dx = undefined,
-      dy = undefined,
-      origTransform = undefined,
-      origTransition = undefined,
-      newStyle = undefined,
-      oldStyle = undefined,
-      newComputedStyle = undefined,
-      isTextNode = undefined,
-      newTextRect = undefined,
-      oldTextRect = undefined;
-  for (i = 0; i < created.length; i += 2) {
-    id = created[i];
-    newElm = created[i + 1].elm;
-    oldVnode = removed[id];
-    if (oldVnode) {
-      isTextNode = oldVnode.isTextNode && isTextElement(newElm); //Are old & new both text?
-      newStyle = newElm.style;
-      newComputedStyle = window.getComputedStyle(newElm, null); //get full computed style for new element
-      oldElm = oldVnode.elm;
-      oldStyle = oldElm.style;
-      //Overall element bounding boxes
-      newRect = newElm.getBoundingClientRect();
-      oldRect = oldVnode.boundingRect; //previously saved bounding rect
-      //Text node bounding boxes & distances
-      if (isTextNode) {
-        newTextRect = getTextNodeRect(newElm.childNodes[0]);
-        oldTextRect = oldVnode.textRect;
-        dx = getTextDx(oldTextRect, newTextRect);
-        dy = getTextDy(oldTextRect, newTextRect);
-      } else {
-        //Calculate distances between old & new positions
-        dx = oldRect.left - newRect.left;
-        dy = oldRect.top - newRect.top;
-      }
-      hRatio = newRect.height / Math.max(oldRect.height, 1);
-      wRatio = isTextNode ? hRatio : newRect.width / Math.max(oldRect.width, 1); //text scales based on hRatio
-      // Animate new element
-      origTransform = newStyle.transform;
-      origTransition = newStyle.transition;
-      if (newComputedStyle.display === 'inline') //inline elements cannot be transformed
-        newStyle.display = 'inline-block'; //this does not appear to have any negative side effects
-      newStyle.transition = origTransition + 'transform 0s';
-      newStyle.transformOrigin = calcTransformOrigin(isTextNode, newTextRect, newRect);
-      newStyle.opacity = '0';
-      newStyle.transform = origTransform + 'translate(' + dx + 'px, ' + dy + 'px) ' + 'scale(' + 1 / wRatio + ', ' + 1 / hRatio + ')';
-      setNextFrame(newStyle, 'transition', origTransition);
-      setNextFrame(newStyle, 'transform', origTransform);
-      setNextFrame(newStyle, 'opacity', '1');
-      // Animate old element
-      for (var key in oldVnode.savedStyle) {
-        //re-apply saved inherited properties
-        if (parseInt(key) != key) {
-          var ms = key.substring(0, 2) === 'ms';
-          var moz = key.substring(0, 3) === 'moz';
-          var webkit = key.substring(0, 6) === 'webkit';
-          if (!ms && !moz && !webkit) //ignore prefixed style properties
-            oldStyle[key] = oldVnode.savedStyle[key];
-        }
-      }
-      oldStyle.position = 'absolute';
-      oldStyle.top = oldRect.top + 'px'; //start at existing position
-      oldStyle.left = oldRect.left + 'px';
-      oldStyle.width = oldRect.width + 'px'; //Needed for elements who were sized relative to their parents
-      oldStyle.height = oldRect.height + 'px'; //Needed for elements who were sized relative to their parents
-      oldStyle.margin = 0; //Margin on hero element leads to incorrect positioning
-      oldStyle.transformOrigin = calcTransformOrigin(isTextNode, oldTextRect, oldRect);
-      oldStyle.transform = '';
-      oldStyle.opacity = '1';
-      document.body.appendChild(oldElm);
-      setNextFrame(oldStyle, 'transform', 'translate(' + -dx + 'px, ' + -dy + 'px) scale(' + wRatio + ', ' + hRatio + ')'); //scale must be on far right for translate to be correct
-      setNextFrame(oldStyle, 'opacity', '0');
-      oldElm.addEventListener('transitionend', function (ev) {
-        if (ev.propertyName === 'transform') document.body.removeChild(ev.target);
-      });
-    }
-  }
-  removed = created = undefined;
-}
-/* eslint-enable */
-
-var HeroModule = {
-  pre: pre,
-  create: create,
-  destroy: destroy,
-  post: post
-};
-
-exports.HeroModule = HeroModule;
-
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4169,124 +4290,25 @@ var _eventlisteners = require('snabbdom/modules/eventlisteners');
 
 var _eventlisteners2 = _interopRequireDefault(_eventlisteners);
 
-var _styleModule = require('./style-module');
+var _style = require('snabbdom/modules/style');
 
-var _heroModule = require('./hero-module');
+var _style2 = _interopRequireDefault(_style);
+
+var _hero = require('snabbdom/modules/hero');
+
+var _hero2 = _interopRequireDefault(_hero);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = [_styleModule.StyleModule, _class2.default, _props2.default, _attributes2.default];
-exports.StyleModule = _styleModule.StyleModule;
+exports.default = [_style2.default, _class2.default, _props2.default, _attributes2.default];
+exports.StyleModule = _style2.default;
 exports.ClassModule = _class2.default;
 exports.PropsModule = _props2.default;
 exports.AttrsModule = _attributes2.default;
-exports.HeroModule = _heroModule.HeroModule;
+exports.HeroModule = _hero2.default;
 exports.EventsModule = _eventlisteners2.default;
 
-},{"./hero-module":49,"./style-module":51,"snabbdom/modules/attributes":34,"snabbdom/modules/class":35,"snabbdom/modules/eventlisteners":36,"snabbdom/modules/props":37}],51:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var raf = undefined;
-if (typeof window !== 'undefined') {
-  raf = window && window.requestAnimationFrame || setTimeout;
-} else {
-  raf = setTimeout;
-}
-
-var nextFrame = function nextFrame(fn) {
-  return raf(function () {
-    return raf(fn);
-  });
-};
-
-function setNextFrame(obj, prop, val) {
-  nextFrame(function () {
-    obj[prop] = val;
-  });
-}
-/* eslint-disable */
-function updateStyle(oldVnode, vnode) {
-  var cur = undefined,
-      name = undefined,
-      elm = vnode.elm,
-      oldStyle = oldVnode.data.style || {},
-      style = vnode.data.style || {},
-      oldHasDel = 'delayed' in oldStyle;
-  for (name in oldStyle) {
-    if (!style[name]) {
-      elm.style[name] = '';
-    }
-  }
-  for (name in style) {
-    cur = style[name];
-    if (name === 'delayed') {
-      for (name in style.delayed) {
-        cur = style.delayed[name];
-        if (!oldHasDel || cur !== oldStyle.delayed[name]) {
-          setNextFrame(elm.style, name, cur);
-        }
-      }
-    } else if (name !== 'remove' && cur !== oldStyle[name]) {
-      elm.style[name] = cur;
-    }
-  }
-}
-
-function applyDestroyStyle(vnode) {
-  var style = undefined,
-      name = undefined,
-      elm = vnode.elm,
-      s = vnode.data.style;
-  if (!s || !(style = s.destroy)) return;
-  for (name in style) {
-    elm.style[name] = style[name];
-  }
-}
-
-function applyRemoveStyle(vnode, rm) {
-  var s = vnode.data.style;
-  if (!s || !s.remove) {
-    rm();
-    return;
-  }
-  var name = undefined,
-      elm = vnode.elm,
-      idx = undefined,
-      i = 0,
-      maxDur = 0,
-      compStyle = undefined,
-      style = s.remove,
-      amount = 0,
-      applied = [];
-  for (name in style) {
-    applied.push(name);
-    elm.style[name] = style[name];
-  }
-  compStyle = getComputedStyle(elm);
-  var props = compStyle['transition-property'].split(', ');
-  for (; i < props.length; ++i) {
-    if (applied.indexOf(props[i]) !== -1) amount++;
-  }
-  elm.addEventListener('transitionend', function (ev) {
-    if (ev.target === elm) --amount;
-    if (amount === 0) rm();
-  });
-}
-/* eslint-enable */
-
-var StyleModule = {
-  create: updateStyle,
-  update: updateStyle,
-  destroy: applyDestroyStyle,
-  remove: applyRemoveStyle
-};
-
-exports.StyleModule = StyleModule;
-
-},{}],52:[function(require,module,exports){
+},{"snabbdom/modules/attributes":35,"snabbdom/modules/class":36,"snabbdom/modules/eventlisteners":37,"snabbdom/modules/hero":38,"snabbdom/modules/props":39,"snabbdom/modules/style":40}],53:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4308,13 +4330,14 @@ function makeIsStrictlyInRootScope(namespace) {
     return matched && namespace.indexOf('.' + c) !== -1;
   };
   return function isStrictlyInRootScope(leaf) {
+    var some = Array.prototype.some;
+    var split = String.prototype.split;
     for (var el = leaf; el; el = el.parentElement) {
-      var split = String.prototype.split;
       var classList = el.classList || split.call(el.className, ' ');
-      if (Array.prototype.some.call(classList, classIsDomestic)) {
+      if (some.call(classList, classIsDomestic)) {
         return true;
       }
-      if (Array.prototype.some.call(classList, classIsForeign)) {
+      if (some.call(classList, classIsForeign)) {
         return false;
       }
     }
@@ -4325,11 +4348,13 @@ function makeIsStrictlyInRootScope(namespace) {
 var isValidString = function isValidString(param) {
   return typeof param === 'string' && param.length > 0;
 };
-var startsWith = function startsWith(string, start) {
-  return string[0] === start;
+
+var contains = function contains(str, match) {
+  return str.indexOf(match) > -1;
 };
+
 var isNotTagName = function isNotTagName(param) {
-  return isValidString(param) && startsWith(param, '.') || startsWith(param, '#') || startsWith(param, ':') || startsWith(param, '*');
+  return isValidString(param) && contains(param, '.') || contains(param, '#') || contains(param, ':');
 };
 
 function sortNamespace(a, b) {
@@ -4337,6 +4362,43 @@ function sortNamespace(a, b) {
     return 0;
   }
   return isNotTagName(a) ? 1 : -1;
+}
+
+function removeDuplicates(arr) {
+  var newArray = [];
+  arr.forEach(function (element) {
+    if (newArray.indexOf(element) === -1) {
+      newArray.push(element);
+    }
+  });
+  return newArray;
+}
+
+var getScope = function getScope(namespace) {
+  return namespace.filter(function (c) {
+    return c.indexOf('.cycle-scope') > -1;
+  });
+};
+
+function makeFindElements(namespace) {
+  return function findElements(rootElement) {
+    if (namespace.join('') === '') {
+      return rootElement;
+    }
+    var slice = Array.prototype.slice;
+
+    var scope = getScope(namespace);
+    // Uses global selector && is isolated
+    if (namespace.indexOf('*') > -1 && scope.length > 0) {
+      // grab top-level boundary of scope
+      var topNode = rootElement.querySelector(scope.join(' '));
+      // grab all children
+      var childNodes = topNode.getElementsByTagName('*');
+      return removeDuplicates([topNode].concat(slice.call(childNodes))).filter(makeIsStrictlyInRootScope(namespace));
+    }
+
+    return removeDuplicates(slice.call(rootElement.querySelectorAll(namespace.join(' '))).concat(slice.call(rootElement.querySelectorAll(namespace.join(''))))).filter(makeIsStrictlyInRootScope(namespace));
+  };
 }
 
 function makeElementSelector(rootElement$) {
@@ -4348,19 +4410,9 @@ function makeElementSelector(rootElement$) {
     var namespace = this.namespace;
     var trimmedSelector = selector.trim();
     var childNamespace = trimmedSelector === ':root' ? namespace : namespace.concat(trimmedSelector).sort(sortNamespace);
-    var element$ = rootElement$.map(function (rootEl) {
-      if (childNamespace.join('') === '') {
-        return rootEl;
-      }
-      var nodeList = rootEl.querySelectorAll(childNamespace.join(' '));
-      if (nodeList.length === 0) {
-        nodeList = rootEl.querySelectorAll(childNamespace.join(''));
-      }
-      var array = Array.prototype.slice.call(nodeList);
-      return array.filter(makeIsStrictlyInRootScope(childNamespace));
-    });
+
     return {
-      observable: element$,
+      observable: rootElement$.map(makeFindElements(childNamespace)),
       namespace: childNamespace,
       select: makeElementSelector(rootElement$),
       events: (0, _events.makeEventsSelector)(rootElement$, childNamespace),
@@ -4373,7 +4425,7 @@ function makeElementSelector(rootElement$) {
 exports.makeElementSelector = makeElementSelector;
 exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
 
-},{"./events":41,"./isolate":45}],53:[function(require,module,exports){
+},{"./events":44,"./isolate":48}],54:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -4430,7 +4482,7 @@ function transposeVTree(vTree) {
 exports.transposeVTree = transposeVTree;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4456,5 +4508,5 @@ var domSelectorParser = function domSelectorParser(selectors) {
 exports.domSelectorParser = domSelectorParser;
 exports.SCOPE_PREFIX = SCOPE_PREFIX;
 
-},{}]},{},[44])(44)
+},{}]},{},[47])(47)
 });
