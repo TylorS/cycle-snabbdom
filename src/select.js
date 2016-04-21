@@ -2,7 +2,7 @@ import {SCOPE_PREFIX, getScope, getSelectors} from './utils'
 import {makeEventsSelector} from './events'
 import {isolateSource, isolateSink} from './isolate'
 import {makeIsStrictlyInRootScope} from './makeIsStrictlyInRootScope'
-import {getIsolatedElements, isIsolatedElement} from './modules/isolate'
+import {getIsolatedElements} from './modules/isolate'
 
 let matchesSelector
 try {
@@ -22,8 +22,8 @@ function makeFindElements(namespace) {
     }
     const slice = Array.prototype.slice
 
-    const scope = getScope(namespace).slice(-1).join(` `).trim()
-    const selector = getSelectors(namespace).join(` `)
+    const scope = getScope(namespace)
+    const selector = getSelectors(namespace)
     let topNode = rootElement
     let topNodeMatches = []
 

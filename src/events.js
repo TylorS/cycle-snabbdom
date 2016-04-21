@@ -62,9 +62,9 @@ function mutateEventCurrentTarget(event, currentTargetElement) {
 }
 
 function makeSimulateBubbling(namespace, rootEl) {
-  const scope = getScope(namespace).slice(-1).join(` `).trim()
+  const scope = getScope(namespace)
   const isStrictlyInRootScope = makeIsStrictlyInRootScope(scope)
-  const selector = getSelectors(namespace).join(` `)
+  const selector = getSelectors(namespace)
   const roof = rootEl.parentElement
 
   return function simulateBubbling(ev) {

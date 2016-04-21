@@ -24,9 +24,9 @@ const domSelectorParser =
   }
 
 const getScope = namespace =>
-  namespace.filter(c => c.indexOf(SCOPE_PREFIX) > -1)
+  namespace.filter(c => c.indexOf(SCOPE_PREFIX) > -1).slice(-1).join(` `).trim()
 
 const getSelectors = namespace =>
-  namespace.filter(c => c.indexOf(SCOPE_PREFIX) === -1)
+  namespace.filter(c => c.indexOf(SCOPE_PREFIX) === -1).join(` `)
 
 export {domSelectorParser, SCOPE_PREFIX, getScope, getSelectors}

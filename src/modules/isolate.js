@@ -51,7 +51,6 @@ function destroy({data = {}}) {
 }
 
 const IsolateModule = {
-  // init: (vNode) => update({}, vNode),
   create: update,
   update,
   remove,
