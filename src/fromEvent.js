@@ -6,7 +6,7 @@ function fromEvent(element, eventName, useCapture = false) {
     element.addEventListener(eventName, next, useCapture)
 
     return () => element.removeEventListener(eventName, next, useCapture)
-  })
+  }).share()
 }
 
 export {fromEvent}
