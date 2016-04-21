@@ -1,4 +1,4 @@
-const SCOPE_PREFIX = `cycle-isolate`
+const SCOPE_PREFIX = `cycle-isolate-`
 
 const isElement =
   obj => typeof HTMLElement === `object` ?
@@ -23,4 +23,10 @@ const domSelectorParser =
     return domElement
   }
 
-export {domSelectorParser, SCOPE_PREFIX}
+const getScope = namespace =>
+  namespace.filter(c => c.indexOf(SCOPE_PREFIX) > -1)
+
+const getSelectors = namespace =>
+  namespace.filter(c => c.indexOf(SCOPE_PREFIX) === -1)
+
+export {domSelectorParser, SCOPE_PREFIX, getScope, getSelectors}

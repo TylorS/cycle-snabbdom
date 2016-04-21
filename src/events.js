@@ -1,6 +1,6 @@
 import {fromEvent} from './fromEvent'
-import {makeIsStrictlyInRootScope} from './select'
-
+import {makeIsStrictlyInRootScope} from './makeIsStrictlyInRootScope'
+import {getScope, getSelectors} from './utils'
 let matchesSelector
 try {
   matchesSelector = require(`matches-selector`)
@@ -62,9 +62,9 @@ function mutateEventCurrentTarget(event, currentTargetElement) {
 }
 
 function makeSimulateBubbling(namespace, rootEl) {
-  const isStrictlyInRootScope = makeIsStrictlyInRootScope(namespace)
-  const descendantSel = namespace.join(` `)
-  const topSel = namespace.join(``)
+  const scope = getScope(namespace).slice(-1).join(` `).trim()
+  const isStrictlyInRootScope = makeIsStrictlyInRootScope(scope)
+  const selector = getSelectors(namespace).join(` `)
   const roof = rootEl.parentElement
 
   return function simulateBubbling(ev) {
@@ -76,7 +76,7 @@ function makeSimulateBubbling(namespace, rootEl) {
       if (!isStrictlyInRootScope(el)) {
         continue
       }
-      if (matchesSelector(el, descendantSel) || matchesSelector(el, topSel)) {
+      if (matchesSelector(el, selector)) {
         mutateEventCurrentTarget(ev, el)
         return true
       }

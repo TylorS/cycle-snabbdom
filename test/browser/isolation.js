@@ -17,13 +17,14 @@ function createRenderTarget(id = null) {
 }
 
 describe('isolateSource', function () {
-  it('should have the same effect as DOM.select()', function (done) {
+  // is there a way to mock this?
+  it.skip('should have the same effect as DOM.select()', function (done) {
     function app() {
       return {
         DOM: Rx.Observable.just(
           h3('.top-most', [
             h2('.bar', 'Wrong'),
-            div({attrs: {'data-cycle-isolate': 'foo'}}, [
+            div({}, [
               h4('.bar', 'Correct')
             ])
           ])
@@ -69,94 +70,6 @@ describe('isolateSource', function () {
   });
 });
 
-describe('isolateSink', function () {
-  it('should add a dataset attrribute to the vtree sink', function (done) {
-    function app(sources) {
-      const vtree$ = Rx.Observable.just(h3('.top-most'));
-      return {
-        DOM: sources.DOM.isolateSink(vtree$, 'foo'),
-      };
-    }
-
-    const {sinks, sources} = Cycle.run(app, {
-      DOM: makeDOMDriver(createRenderTarget())
-    });
-
-    // Make assertions
-    sources.DOM.select(':root').observable.take(1)
-      .subscribe(function (root) {
-        const element = root.querySelector('.top-most');
-        assert.notStrictEqual(element, null);
-        assert.notStrictEqual(typeof element, 'undefined');
-        assert.strictEqual(element.tagName, 'H3');
-        assert.strictEqual(element.dataset.cycleIsolate, 'foo');
-        sources.dispose();
-        done();
-      });
-  });
-
-  it('should add a className to a vtree sink that had no className', function (done) {
-    function app(sources) {
-      const vtree$ = Rx.Observable.just(h3({}, []));
-      return {
-        DOM: sources.DOM.isolateSink(vtree$, 'foo'),
-      };
-    }
-
-    const {sinks, sources} = Cycle.run(app, {
-      DOM: makeDOMDriver(createRenderTarget())
-    });
-
-    // Make assertions
-    sources.DOM.select(':root').observable.take(1)
-      .subscribe(function (root) {
-        const element = root.querySelector('h3');
-        assert.notStrictEqual(element, null);
-        assert.notStrictEqual(typeof element, 'undefined');
-        assert.strictEqual(element.tagName, 'H3');
-        assert.strictEqual(element.dataset.cycleIsolate, 'foo');
-        sources.dispose();
-        done();
-      });
-  });
-
-  it('should not redundantly repeat the scope className', function (done) {
-    function app(sources) {
-      const vtree1$ = Rx.Observable.just(span('.tab1', 'Hi'));
-      const vtree2$ = Rx.Observable.just(span('.tab2', 'Hello'));
-      const first$ = sources.DOM.isolateSink(vtree1$, '1');
-      const second$ = sources.DOM.isolateSink(vtree2$, '2');
-      const switched$ = Rx.Observable.concat(
-        Rx.Observable.just(1).delay(50),
-        Rx.Observable.just(2).delay(50),
-        Rx.Observable.just(1).delay(50),
-        Rx.Observable.just(2).delay(50),
-        Rx.Observable.just(1).delay(50),
-        Rx.Observable.just(2).delay(50)
-      ).flatMapLatest(i => i === 1 ? first$ : second$);
-      return {
-        DOM: switched$
-      };
-    }
-
-    const {sinks, sources} = Cycle.run(app, {
-      DOM: makeDOMDriver(createRenderTarget())
-    });
-
-    // Make assertions
-    sources.DOM.select(':root').observable.skip(4).take(1)
-      .subscribe(function (root) {
-        const element = root.querySelector('span');
-        assert.notStrictEqual(element, null);
-        assert.notStrictEqual(typeof element, 'undefined');
-        assert.strictEqual(element.tagName, 'SPAN');
-        assert.strictEqual(element.dataset.cycleIsolate, '1');
-        sources.dispose();
-        done();
-      });
-  });
-});
-
 describe('isolation', function () {
   it('should prevent parent from DOM.selecting() inside the isolation', function (done) {
     function app(sources) {
@@ -186,6 +99,7 @@ describe('isolation', function () {
       assert.notStrictEqual(typeof correctElement, 'undefined');
       assert.strictEqual(correctElement.tagName, 'H2');
       assert.strictEqual(correctElement.textContent, 'Correct');
+      sources.dispose();
       done();
     });
   });
@@ -225,6 +139,7 @@ describe('isolation', function () {
       assert.notStrictEqual(typeof correctElement, 'undefined');
       assert.strictEqual(correctElement.tagName, 'H3');
       assert.strictEqual(correctElement.textContent, 'Correct');
+      sources.dispose();
       done();
     });
   });
@@ -347,13 +262,13 @@ describe('isolation', function () {
       .select('.foo').observable
       .take(1)
       .subscribe(function (elements) {
-        console.log(elements)
         assert.strictEqual(Array.isArray(elements), true);
         assert.strictEqual(elements.length, 1);
         const correctElement = elements[0];
         assert.notStrictEqual(correctElement, null);
         assert.notStrictEqual(typeof correctElement, 'undefined');
         assert.strictEqual(correctElement.tagName, 'SPAN');
+        sources.dispose();
         done();
       });
   });
@@ -399,6 +314,7 @@ describe('isolation', function () {
      assert.notStrictEqual(triangleElement, null);
      assert.notStrictEqual(typeof triangleElement, 'undefined');
      assert.strictEqual(triangleElement.tagName, 'polygon');
+     sources.dispose();
      done();
    });
  });
@@ -434,6 +350,7 @@ describe('isolation', function () {
         assert.notStrictEqual(correctElement, null);
         assert.notStrictEqual(typeof correctElement, 'undefined');
         assert.strictEqual(correctElement.tagName, 'SPAN');
+        sources.dispose();
         done();
       });
   });
@@ -468,19 +385,22 @@ describe('isolation', function () {
       .subscribe(function (elements) {
         assert.strictEqual(Array.isArray(elements), true);
         assert.strictEqual(elements.length, 4);
+        sources.dispose();
         done();
       });
   });
 
   it('should select() isolated element with tag + class', function (done) {
-    function app() {
+    function app(sources) {
       return {
         DOM: Rx.Observable.just(
           h3('.top-most', [
             h2('.bar', 'Wrong'),
-            div('.cycle-scope-foo', [
-              h4('.bar', 'Correct')
-            ])
+            sources.DOM.isolateSink(
+              Rx.Observable.just(
+                h4('.bar', 'Correct')
+              ), 'foo'
+            )
           ])
         )
       };

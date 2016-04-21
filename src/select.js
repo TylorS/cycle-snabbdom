@@ -1,5 +1,8 @@
+import {SCOPE_PREFIX, getScope, getSelectors} from './utils'
 import {makeEventsSelector} from './events'
 import {isolateSource, isolateSink} from './isolate'
+import {makeIsStrictlyInRootScope} from './makeIsStrictlyInRootScope'
+import {getIsolatedElements, isIsolatedElement} from './modules/isolate'
 
 let matchesSelector
 try {
@@ -8,37 +11,8 @@ try {
   matchesSelector = () => {}
 }
 
-function getIsolate(el) {
-  if (el instanceof SVGElement) {
-    return el.getAttribute(`cycle-isolate`)
-  }
-  return el.dataset.cycleIsolate || null
-}
-
-function makeIsStrictlyInRootScope(namespace) {
-  return function isStrictlyInRootScope(leaf) {
-    for (let el = leaf; el; el = el.parentElement) {
-      const isolate = getIsolate(el)
-      const selector = `[data-cycle-isolate="${isolate}"]`
-      if (isolate && namespace.indexOf(selector) === -1) {
-        return false
-      }
-      if (isolate && namespace.indexOf(selector) !== -1) {
-        return true
-      }
-    }
-    return true
-  }
-}
-
-const getScope = namespace =>
-  namespace.filter(c => c.indexOf(`[data-cycle-isolate=`) > -1)
-
-const getSelectors = namespace =>
-  namespace.filter(c => c.indexOf(`[data-cycle-isolate=`) === -1)
-
 function sortIsolatedNamespace(a) {
-  return a.indexOf(`[`) !== -1 ? 1 : -1
+  return a.indexOf(SCOPE_PREFIX) !== -1 ? 1 : -1
 }
 
 function makeFindElements(namespace) {
@@ -48,32 +22,31 @@ function makeFindElements(namespace) {
     }
     const slice = Array.prototype.slice
 
-    const scope = getScope(namespace).join(` `)
+    const scope = getScope(namespace).slice(-1).join(` `).trim()
     const selector = getSelectors(namespace).join(` `)
     let topNode = rootElement
     let topNodeMatches = []
 
     if (scope.length > 0) {
-      topNode = rootElement.querySelector(scope) || rootElement
+      topNode = getIsolatedElements()[scope]
       if (matchesSelector(topNode, selector)) {
         topNodeMatches.push(topNode)
       }
     }
 
     return slice.call(topNode.querySelectorAll(selector))
+      .filter(makeIsStrictlyInRootScope(scope))
       .concat(topNodeMatches)
-      .filter(makeIsStrictlyInRootScope(namespace))
   }
 }
 
-function makeElementSelector(rootElement$) {
+function makeElementSelector(rootElement$, namespace) {
   return function elementSelector(selector) {
     if (typeof selector !== `string`) {
       throw new Error(`DOM driver's select() expects the argument to be a ` +
         `string as a CSS selector`)
     }
 
-    const namespace = this.namespace
     const trimmedSelector = selector.trim()
     const childNamespace = trimmedSelector === `:root` ?
       namespace :
@@ -82,7 +55,7 @@ function makeElementSelector(rootElement$) {
     return {
       observable: rootElement$.map(makeFindElements(childNamespace)),
       namespace: childNamespace,
-      select: makeElementSelector(rootElement$),
+      select: makeElementSelector(rootElement$, childNamespace),
       events: makeEventsSelector(rootElement$, childNamespace),
       isolateSource,
       isolateSink,

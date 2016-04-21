@@ -4,7 +4,8 @@ import classNameFromVNode from 'snabbdom-selector/lib/classNameFromVNode'
 import selectorParser from 'snabbdom-selector/lib/selectorParser'
 
 import {domSelectorParser} from './utils'
-import defaultModules, {IsolateModule} from './modules'
+import defaultModules from './modules'
+import {IsolateModule, resetIsolatedElements} from './modules/isolate'
 import {transposeVTree} from './transposition'
 import {isolateSink, isolateSource} from './isolate'
 import {makeElementSelector} from './select'
@@ -87,10 +88,9 @@ function makeDOMDriver(container, {
 
     return {
       observable: rootElement$,
-      namespace: [],
-      select: makeElementSelector(rootElement$),
-      events: makeEventsSelector(rootElement$),
-      dispose: () => disposable.dispose(),
+      select: makeElementSelector(rootElement$, []),
+      events: makeEventsSelector(rootElement$, []),
+      dispose: () => { disposable.dispose(); resetIsolatedElements() },
       isolateSink,
       isolateSource,
     }
