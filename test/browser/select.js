@@ -204,9 +204,9 @@ describe('DOMSource.select()', function () {
 
 
       sources.DOM.select('*').observable.take(1).subscribe(function (elements) {
-       assert.strictEqual(Array.isArray(elements), true);
-       assert.strictEqual(elements.length, 3);
-       done();
+        assert.strictEqual(Array.isArray(elements), true);
+        assert.strictEqual(elements.length, 3);
+        done();
      });
    });
 

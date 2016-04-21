@@ -1,4 +1,4 @@
-const SCOPE_PREFIX = `cycle-scope-`
+const SCOPE_PREFIX = `cycle-isolate`
 
 const isElement =
   obj => typeof HTMLElement === `object` ?

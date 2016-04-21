@@ -4,7 +4,7 @@ import classNameFromVNode from 'snabbdom-selector/lib/classNameFromVNode'
 import selectorParser from 'snabbdom-selector/lib/selectorParser'
 
 import {domSelectorParser} from './utils'
-import defaultModules from './modules'
+import defaultModules, {IsolateModule} from './modules'
 import {transposeVTree} from './transposition'
 import {isolateSink, isolateSource} from './isolate'
 import {makeElementSelector} from './select'
@@ -59,9 +59,6 @@ function makeDOMDriver(container, {
   modules = defaultModules,
   onError = defaultOnErrorFn,
 } = defaults) {
-  const patch = init(modules)
-  const rootElement = domSelectorParser(container)
-
   if (!Array.isArray(modules)) {
     throw new Error(`Optional modules option must be ` +
      `an array for snabbdom modules`)
@@ -71,6 +68,9 @@ function makeDOMDriver(container, {
     throw new Error(`You provided an \`onError\` to makeDOMDriver but it was ` +
       `not a function. It should be a callback function to handle errors.`)
   }
+
+  const patch = init(modules.concat(IsolateModule))
+  const rootElement = domSelectorParser(container)
 
   function DOMDriver(view$) {
     DOMDriverInputGuard(view$)

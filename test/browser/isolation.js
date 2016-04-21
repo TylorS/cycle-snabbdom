@@ -23,7 +23,7 @@ describe('isolateSource', function () {
         DOM: Rx.Observable.just(
           h3('.top-most', [
             h2('.bar', 'Wrong'),
-            div('.cycle-scope-foo', [
+            div({attrs: {'data-cycle-isolate': 'foo'}}, [
               h4('.bar', 'Correct')
             ])
           ])
@@ -70,7 +70,7 @@ describe('isolateSource', function () {
 });
 
 describe('isolateSink', function () {
-  it('should add a className to the vtree sink', function (done) {
+  it('should add a dataset attrribute to the vtree sink', function (done) {
     function app(sources) {
       const vtree$ = Rx.Observable.just(h3('.top-most'));
       return {
@@ -89,7 +89,7 @@ describe('isolateSink', function () {
         assert.notStrictEqual(element, null);
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'H3');
-        assert.strictEqual(element.className, 'top-most cycle-scope-foo');
+        assert.strictEqual(element.dataset.cycleIsolate, 'foo');
         sources.dispose();
         done();
       });
@@ -114,7 +114,7 @@ describe('isolateSink', function () {
         assert.notStrictEqual(element, null);
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'H3');
-        assert.strictEqual(element.className, 'cycle-scope-foo');
+        assert.strictEqual(element.dataset.cycleIsolate, 'foo');
         sources.dispose();
         done();
       });
@@ -150,7 +150,7 @@ describe('isolateSink', function () {
         assert.notStrictEqual(element, null);
         assert.notStrictEqual(typeof element, 'undefined');
         assert.strictEqual(element.tagName, 'SPAN');
-        assert.strictEqual(element.className, 'tab1 cycle-scope-1');
+        assert.strictEqual(element.dataset.cycleIsolate, '1');
         sources.dispose();
         done();
       });
@@ -347,6 +347,7 @@ describe('isolation', function () {
       .select('.foo').observable
       .take(1)
       .subscribe(function (elements) {
+        console.log(elements)
         assert.strictEqual(Array.isArray(elements), true);
         assert.strictEqual(elements.length, 1);
         const correctElement = elements[0];
