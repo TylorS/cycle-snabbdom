@@ -3511,6 +3511,8 @@ var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
 
 var _utils = require('./utils');
 
+var _isolate = require('./modules/isolate');
+
 var matchesSelector = void 0;
 try {
   matchesSelector = require('matches-selector');
@@ -3584,19 +3586,21 @@ function makeEventsSelector(rootElement$, namespace) {
       useCapture = options.useCapture;
     }
 
+    var scope = (0, _utils.getScope)(namespace);
     return rootElement$.first().flatMapLatest(function (rootElement) {
       if (!namespace || namespace.length === 0) {
         return (0, _fromEvent.fromEvent)(rootElement, type, useCapture);
       }
+      var topNode = (0, _isolate.getIsolatedElements)()[scope] || rootElement;
       var simulateBubbling = makeSimulateBubbling(namespace, rootElement);
-      return (0, _fromEvent.fromEvent)(rootElement, type, useCapture).filter(simulateBubbling);
+      return (0, _fromEvent.fromEvent)(topNode, type, useCapture).filter(simulateBubbling);
     }).share();
   };
 }
 
 exports.makeEventsSelector = makeEventsSelector;
 
-},{"./fromEvent":45,"./makeIsStrictlyInRootScope":51,"./utils":57,"matches-selector":22}],45:[function(require,module,exports){
+},{"./fromEvent":45,"./makeIsStrictlyInRootScope":51,"./modules/isolate":54,"./utils":57,"matches-selector":22}],45:[function(require,module,exports){
 (function (global){
 'use strict';
 
