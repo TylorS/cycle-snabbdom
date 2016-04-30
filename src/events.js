@@ -1,6 +1,8 @@
 import {fromEvent} from './fromEvent'
 import {makeIsStrictlyInRootScope} from './makeIsStrictlyInRootScope'
 import {getScope, getSelectors} from './utils'
+import {getIsolatedElements} from './modules/isolate'
+
 let matchesSelector
 try {
   matchesSelector = require(`matches-selector`)
@@ -99,14 +101,16 @@ function makeEventsSelector(rootElement$, namespace) {
       useCapture = options.useCapture
     }
 
+    const scope = getScope(namespace)
     return rootElement$
       .first()
       .flatMapLatest(rootElement => {
         if (!namespace || namespace.length === 0) {
           return fromEvent(rootElement, type, useCapture)
         }
+        const topNode = getIsolatedElements()[scope] || rootElement
         const simulateBubbling = makeSimulateBubbling(namespace, rootElement)
-        return fromEvent(rootElement, type, useCapture)
+        return fromEvent(topNode, type, useCapture)
           .filter(simulateBubbling)
       })
       .share()
