@@ -1,5 +1,7 @@
 import {fromEvent} from './fromEvent'
-import {makeIsStrictlyInRootScope} from './select'
+import {makeIsStrictlyInRootScope} from './makeIsStrictlyInRootScope'
+import {getScope, getSelectors} from './utils'
+import {getIsolatedElements} from './modules/isolate'
 
 let matchesSelector
 try {
@@ -62,9 +64,9 @@ function mutateEventCurrentTarget(event, currentTargetElement) {
 }
 
 function makeSimulateBubbling(namespace, rootEl) {
-  const isStrictlyInRootScope = makeIsStrictlyInRootScope(namespace)
-  const descendantSel = namespace.join(` `)
-  const topSel = namespace.join(``)
+  const scope = getScope(namespace)
+  const isStrictlyInRootScope = makeIsStrictlyInRootScope(scope)
+  const selector = getSelectors(namespace)
   const roof = rootEl.parentElement
 
   return function simulateBubbling(ev) {
@@ -76,7 +78,7 @@ function makeSimulateBubbling(namespace, rootEl) {
       if (!isStrictlyInRootScope(el)) {
         continue
       }
-      if (matchesSelector(el, descendantSel) || matchesSelector(el, topSel)) {
+      if (matchesSelector(el, selector)) {
         mutateEventCurrentTarget(ev, el)
         return true
       }
@@ -99,14 +101,16 @@ function makeEventsSelector(rootElement$, namespace) {
       useCapture = options.useCapture
     }
 
+    const scope = getScope(namespace)
     return rootElement$
       .first()
       .flatMapLatest(rootElement => {
         if (!namespace || namespace.length === 0) {
           return fromEvent(rootElement, type, useCapture)
         }
+        const topNode = getIsolatedElements()[scope] || rootElement
         const simulateBubbling = makeSimulateBubbling(namespace, rootElement)
-        return fromEvent(rootElement, type, useCapture)
+        return fromEvent(topNode, type, useCapture)
           .filter(simulateBubbling)
       })
       .share()

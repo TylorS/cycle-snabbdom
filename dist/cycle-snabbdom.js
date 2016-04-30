@@ -2947,7 +2947,7 @@ function updateEventListeners(oldVnode, vnode) {
 module.exports = {create: updateEventListeners, update: updateEventListeners};
 
 },{"../is":34}],38:[function(require,module,exports){
-var raf = (typeof window !== `undefined` && window.requestAnimationFrame) || setTimeout;
+var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
 function setNextFrame(obj, prop, val) {
@@ -3121,7 +3121,7 @@ function updateProps(oldVnode, vnode) {
 module.exports = {create: updateProps, update: updateProps};
 
 },{}],40:[function(require,module,exports){
-var raf = (typeof window !== `undefined` && window.requestAnimationFrame) || setTimeout;
+var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
 function setNextFrame(obj, prop, val) {
@@ -3507,7 +3507,9 @@ exports.makeEventsSelector = undefined;
 
 var _fromEvent = require('./fromEvent');
 
-var _select = require('./select');
+var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
+
+var _utils = require('./utils');
 
 var matchesSelector = void 0;
 try {
@@ -3544,9 +3546,9 @@ function mutateEventCurrentTarget(event, currentTargetElement) {
 }
 
 function makeSimulateBubbling(namespace, rootEl) {
-  var isStrictlyInRootScope = (0, _select.makeIsStrictlyInRootScope)(namespace);
-  var descendantSel = namespace.join(' ');
-  var topSel = namespace.join('');
+  var scope = (0, _utils.getScope)(namespace);
+  var isStrictlyInRootScope = (0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(scope);
+  var selector = (0, _utils.getSelectors)(namespace);
   var roof = rootEl.parentElement;
 
   return function simulateBubbling(ev) {
@@ -3558,7 +3560,7 @@ function makeSimulateBubbling(namespace, rootEl) {
       if (!isStrictlyInRootScope(el)) {
         continue;
       }
-      if (matchesSelector(el, descendantSel) || matchesSelector(el, topSel)) {
+      if (matchesSelector(el, selector)) {
         mutateEventCurrentTarget(ev, el);
         return true;
       }
@@ -3594,7 +3596,7 @@ function makeEventsSelector(rootElement$, namespace) {
 
 exports.makeEventsSelector = makeEventsSelector;
 
-},{"./fromEvent":45,"./select":53,"matches-selector":22}],45:[function(require,module,exports){
+},{"./fromEvent":45,"./makeIsStrictlyInRootScope":51,"./utils":57,"matches-selector":22}],45:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3605,64 +3607,18 @@ exports.fromEvent = undefined;
 
 var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
 
-var _rx2 = _interopRequireDefault(_rx);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var disposableCreate = _rx2.default.Disposable.create;
-var CompositeDisposable = _rx2.default.CompositeDisposable;
-var AnonymousObservable = _rx2.default.AnonymousObservable;
-
-function createListener(_ref) {
-  var element = _ref.element;
-  var eventName = _ref.eventName;
-  var handler = _ref.handler;
-  var useCapture = _ref.useCapture;
-
-  if (element.addEventListener) {
-    element.addEventListener(eventName, handler, useCapture);
-    return disposableCreate(function removeEventListener() {
-      element.removeEventListener(eventName, handler, useCapture);
-    });
-  }
-  throw new Error('No listener found');
-}
-
-function createEventListener(_ref2) {
-  var element = _ref2.element;
-  var eventName = _ref2.eventName;
-  var handler = _ref2.handler;
-  var useCapture = _ref2.useCapture;
-
-  var disposables = new CompositeDisposable();
-
-  if (Array.isArray(element)) {
-    for (var i = 0, len = element.length; i < len; i++) {
-      disposables.add(createEventListener({
-        element: element[i],
-        eventName: eventName,
-        handler: handler,
-        useCapture: useCapture
-      }));
-    }
-  } else if (element) {
-    disposables.add(createListener({ element: element, eventName: eventName, handler: handler, useCapture: useCapture }));
-  }
-  return disposables;
-}
-
 function fromEvent(element, eventName) {
   var useCapture = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
-  return new AnonymousObservable(function subscribe(observer) {
-    return createEventListener({
-      element: element,
-      eventName: eventName,
-      handler: function handler() {
-        observer.onNext(arguments[0]);
-      },
-      useCapture: useCapture
-    });
+  return _rx.Observable.create(function (observer) {
+    var next = function next(event) {
+      return observer.onNext(event);
+    };
+    element.addEventListener(eventName, next, useCapture);
+
+    return function () {
+      return element.removeEventListener(eventName, next, useCapture);
+    };
   }).share();
 }
 
@@ -3986,7 +3942,7 @@ exports.makeDOMDriver = _makeDOMDriver.makeDOMDriver;
 exports.mockDOMSource = _mockDOMSource.mockDOMSource;
 exports.makeHTMLDriver = _makeHTMLDriver.makeHTMLDriver;
 
-},{"./hyperscript":46,"./makeDOMDriver":49,"./makeHTMLDriver":50,"./mockDOMSource":51,"./modules":52,"hyperscript-helpers":2,"snabbdom/thunk":42}],48:[function(require,module,exports){
+},{"./hyperscript":46,"./makeDOMDriver":49,"./makeHTMLDriver":50,"./mockDOMSource":52,"./modules":53,"hyperscript-helpers":2,"snabbdom/thunk":42}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3996,31 +3952,20 @@ exports.isolateSource = exports.isolateSink = undefined;
 
 var _utils = require('./utils');
 
-var isolateSource = function isolateSource(source_, scope) {
-  return source_.select('.' + _utils.SCOPE_PREFIX + scope);
+var isolateSource = function isolateSource(source, scope) {
+  return source.select(_utils.SCOPE_PREFIX + scope);
 };
 
 var isolateSink = function isolateSink(sink, scope) {
-  return sink.map(function (vTree) {
-    if (vTree.sel.indexOf('' + _utils.SCOPE_PREFIX + scope) === -1) {
-      if (vTree.data.ns) {
-        // svg elements
-        var _vTree$data$attrs = vTree.data.attrs;
-        var attrs = _vTree$data$attrs === undefined ? {} : _vTree$data$attrs;
-
-        attrs.class = (attrs.class || '') + ' ' + _utils.SCOPE_PREFIX + scope;
-      } else {
-        vTree.sel = vTree.sel + '.' + _utils.SCOPE_PREFIX + scope;
-      }
-    }
-    return vTree;
+  return sink.tap(function (vTree) {
+    vTree.data.isolate = _utils.SCOPE_PREFIX + scope;
   });
 };
 
 exports.isolateSink = isolateSink;
 exports.isolateSource = isolateSource;
 
-},{"./utils":55}],49:[function(require,module,exports){
+},{"./utils":57}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4048,9 +3993,11 @@ var _modules = require('./modules');
 
 var _modules2 = _interopRequireDefault(_modules);
 
+var _isolate = require('./modules/isolate');
+
 var _transposition = require('./transposition');
 
-var _isolate = require('./isolate');
+var _isolate2 = require('./isolate');
 
 var _select = require('./select');
 
@@ -4117,9 +4064,6 @@ function makeDOMDriver(container) {
   var _ref$onError = _ref.onError;
   var onError = _ref$onError === undefined ? defaultOnErrorFn : _ref$onError;
 
-  var patch = (0, _snabbdom.init)(modules);
-  var rootElement = (0, _utils.domSelectorParser)(container);
-
   if (!Array.isArray(modules)) {
     throw new Error('Optional modules option must be ' + 'an array for snabbdom modules');
   }
@@ -4127,6 +4071,9 @@ function makeDOMDriver(container) {
   if (typeof onError !== 'function') {
     throw new Error('You provided an `onError` to makeDOMDriver but it was ' + 'not a function. It should be a callback function to handle errors.');
   }
+
+  var patch = (0, _snabbdom.init)(modules.concat(_isolate.IsolateModule));
+  var rootElement = (0, _utils.domSelectorParser)(container);
 
   function DOMDriver(view$) {
     DOMDriverInputGuard(view$);
@@ -4140,14 +4087,13 @@ function makeDOMDriver(container) {
 
     return {
       observable: rootElement$,
-      namespace: [],
-      select: (0, _select.makeElementSelector)(rootElement$),
-      events: (0, _events.makeEventsSelector)(rootElement$),
+      select: (0, _select.makeElementSelector)(rootElement$, []),
+      events: (0, _events.makeEventsSelector)(rootElement$, []),
       dispose: function dispose() {
-        return disposable.dispose();
+        disposable.dispose();(0, _isolate.resetIsolatedElements)();
       },
-      isolateSink: _isolate.isolateSink,
-      isolateSource: _isolate.isolateSource
+      isolateSink: _isolate2.isolateSink,
+      isolateSource: _isolate2.isolateSource
     };
   }
 
@@ -4156,7 +4102,7 @@ function makeDOMDriver(container) {
 
 exports.makeDOMDriver = makeDOMDriver;
 
-},{"./events":44,"./isolate":48,"./modules":52,"./select":53,"./transposition":54,"./utils":55,"snabbdom":41,"snabbdom-selector/lib/classNameFromVNode":23,"snabbdom-selector/lib/selectorParser":24,"snabbdom/h":32}],50:[function(require,module,exports){
+},{"./events":44,"./isolate":48,"./modules":53,"./modules/isolate":54,"./select":55,"./transposition":56,"./utils":57,"snabbdom":41,"snabbdom-selector/lib/classNameFromVNode":23,"snabbdom-selector/lib/selectorParser":24,"snabbdom/h":32}],50:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -4199,7 +4145,32 @@ function makeHTMLDriver() {
 exports.makeHTMLDriver = makeHTMLDriver;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transposition":54,"snabbdom-to-html":26}],51:[function(require,module,exports){
+},{"./transposition":56,"snabbdom-to-html":26}],51:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
+
+var _isolate = require('./modules/isolate');
+
+function makeIsStrictlyInRootScope(scope) {
+  return function isStrictlyInRootScope(leaf) {
+    for (var el = leaf; el; el = el.parentElement) {
+      var _scope = (0, _isolate.isIsolatedElement)(el);
+      if (_scope && _scope !== scope) {
+        return false;
+      }
+      if (_scope) {
+        return true;
+      }
+    }
+    return true;
+  };
+}
+
+},{"./modules/isolate":54}],52:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -4267,13 +4238,13 @@ function mockDOMSource() {
 exports.mockDOMSource = mockDOMSource;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
+exports.IsolateModule = exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
 
 var _class = require('snabbdom/modules/class');
 
@@ -4299,6 +4270,8 @@ var _hero = require('snabbdom/modules/hero');
 
 var _hero2 = _interopRequireDefault(_hero);
 
+var _isolate = require('./isolate');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = [_style2.default, _class2.default, _props2.default, _attributes2.default];
@@ -4308,8 +4281,91 @@ exports.PropsModule = _props2.default;
 exports.AttrsModule = _attributes2.default;
 exports.HeroModule = _hero2.default;
 exports.EventsModule = _eventlisteners2.default;
+exports.IsolateModule = _isolate.IsolateModule;
 
-},{"snabbdom/modules/attributes":35,"snabbdom/modules/class":36,"snabbdom/modules/eventlisteners":37,"snabbdom/modules/hero":38,"snabbdom/modules/props":39,"snabbdom/modules/style":40}],53:[function(require,module,exports){
+},{"./isolate":54,"snabbdom/modules/attributes":35,"snabbdom/modules/class":36,"snabbdom/modules/eventlisteners":37,"snabbdom/modules/hero":38,"snabbdom/modules/props":39,"snabbdom/modules/style":40}],54:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isIsolatedElement = isIsolatedElement;
+var isolatedElements = {};
+
+var getIsolatedElements = exports.getIsolatedElements = function getIsolatedElements() {
+  return isolatedElements;
+};
+var resetIsolatedElements = exports.resetIsolatedElements = function resetIsolatedElements() {
+  isolatedElements = {};
+};
+
+function isIsolatedElement(elm) {
+  var keys = Object.keys(isolatedElements);
+  for (var i = 0; i < keys.length; ++i) {
+    if (elm === isolatedElements[keys[i]]) {
+      return keys[i].trim();
+    }
+  }
+  return false;
+}
+
+function setScope(elm, scope) {
+  isolatedElements[scope] = elm;
+}
+
+function removeScope(scope) {
+  delete isolatedElements[scope];
+}
+
+function update(oldVNode, vNode) {
+  var _oldVNode$data = oldVNode.data;
+  var oldData = _oldVNode$data === undefined ? {} : _oldVNode$data;
+  var elm = vNode.elm;
+  var _vNode$data = vNode.data;
+  var data = _vNode$data === undefined ? {} : _vNode$data;
+
+
+  var oldIsolate = oldData.isolate || "";
+  var isolate = data.isolate || "";
+
+  if (isolate) {
+    removeScope(oldIsolate);
+    setScope(elm, isolate);
+  }
+  if (oldIsolate && !isolate) {
+    removeScope(isolate);
+  }
+}
+
+function remove(_ref, cb) {
+  var _ref$data = _ref.data;
+  var data = _ref$data === undefined ? {} : _ref$data;
+
+  if (data.isolate) {
+    removeScope(data.isolate);
+  }
+  cb();
+}
+
+function destroy(_ref2) {
+  var _ref2$data = _ref2.data;
+  var data = _ref2$data === undefined ? {} : _ref2$data;
+
+  if (data.isolate) {
+    removeScope(data.isolate);
+  }
+}
+
+var IsolateModule = {
+  create: update,
+  update: update,
+  remove: remove,
+  destroy: destroy
+};
+
+exports.IsolateModule = IsolateModule;
+
+},{}],55:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4317,69 +4373,26 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.makeIsStrictlyInRootScope = exports.makeElementSelector = undefined;
 
+var _utils = require('./utils');
+
 var _events = require('./events');
 
 var _isolate = require('./isolate');
 
-function makeIsStrictlyInRootScope(namespace) {
-  var classIsForeign = function classIsForeign(c) {
-    var matched = c.match(/cycle-scope-(\S+)/);
-    return matched && namespace.indexOf('.' + c) === -1;
-  };
-  var classIsDomestic = function classIsDomestic(c) {
-    var matched = c.match(/cycle-scope-(\S+)/);
-    return matched && namespace.indexOf('.' + c) !== -1;
-  };
-  return function isStrictlyInRootScope(leaf) {
-    var some = Array.prototype.some;
-    var split = String.prototype.split;
-    for (var el = leaf; el; el = el.parentElement) {
-      var classList = el.classList || split.call(el.className, ' ');
-      if (some.call(classList, classIsDomestic)) {
-        return true;
-      }
-      if (some.call(classList, classIsForeign)) {
-        return false;
-      }
-    }
-    return true;
-  };
+var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
+
+var _isolate2 = require('./modules/isolate');
+
+var matchesSelector = void 0;
+try {
+  matchesSelector = require('matches-selector');
+} catch (e) {
+  matchesSelector = function matchesSelector() {};
 }
 
-var isValidString = function isValidString(param) {
-  return typeof param === 'string' && param.length > 0;
-};
-
-var contains = function contains(str, match) {
-  return str.indexOf(match) > -1;
-};
-
-var isNotTagName = function isNotTagName(param) {
-  return isValidString(param) && contains(param, '.') || contains(param, '#') || contains(param, ':');
-};
-
-function sortNamespace(a, b) {
-  if (isNotTagName(a) && isNotTagName(b)) {
-    return 0;
-  }
-  return isNotTagName(a) ? 1 : -1;
+function sortIsolatedNamespace(a) {
+  return a.indexOf(_utils.SCOPE_PREFIX) !== -1 ? 1 : -1;
 }
-
-function removeDuplicates(arr) {
-  var newArray = [];
-  arr.forEach(function (element) {
-    if (newArray.indexOf(element) === -1) {
-      newArray.push(element);
-    }
-  });
-  return newArray;
-}
-
-var getScope = function getScope(namespace) {
-  return namespace.filter(function (c) {
-    return c.indexOf('.cycle-scope') > -1;
-  });
-};
 
 function makeFindElements(namespace) {
   return function findElements(rootElement) {
@@ -4388,34 +4401,35 @@ function makeFindElements(namespace) {
     }
     var slice = Array.prototype.slice;
 
-    var scope = getScope(namespace);
-    // Uses global selector && is isolated
-    if (namespace.indexOf('*') > -1 && scope.length > 0) {
-      // grab top-level boundary of scope
-      var topNode = rootElement.querySelector(scope.join(' '));
-      // grab all children
-      var childNodes = topNode.getElementsByTagName('*');
-      return removeDuplicates([topNode].concat(slice.call(childNodes))).filter(makeIsStrictlyInRootScope(namespace));
+    var scope = (0, _utils.getScope)(namespace);
+    var selector = (0, _utils.getSelectors)(namespace);
+    var topNode = rootElement;
+    var topNodeMatches = [];
+
+    if (scope.length > 0) {
+      topNode = (0, _isolate2.getIsolatedElements)()[scope];
+      if (matchesSelector(topNode, selector)) {
+        topNodeMatches.push(topNode);
+      }
     }
 
-    return removeDuplicates(slice.call(rootElement.querySelectorAll(namespace.join(' '))).concat(slice.call(rootElement.querySelectorAll(namespace.join(''))))).filter(makeIsStrictlyInRootScope(namespace));
+    return slice.call(topNode.querySelectorAll(selector)).filter((0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(scope)).concat(topNodeMatches);
   };
 }
 
-function makeElementSelector(rootElement$) {
+function makeElementSelector(rootElement$, namespace) {
   return function elementSelector(selector) {
     if (typeof selector !== 'string') {
       throw new Error('DOM driver\'s select() expects the argument to be a ' + 'string as a CSS selector');
     }
 
-    var namespace = this.namespace;
     var trimmedSelector = selector.trim();
-    var childNamespace = trimmedSelector === ':root' ? namespace : namespace.concat(trimmedSelector).sort(sortNamespace);
+    var childNamespace = trimmedSelector === ':root' ? namespace : namespace.concat(trimmedSelector).sort(sortIsolatedNamespace);
 
     return {
       observable: rootElement$.map(makeFindElements(childNamespace)),
       namespace: childNamespace,
-      select: makeElementSelector(rootElement$),
+      select: makeElementSelector(rootElement$, childNamespace),
       events: (0, _events.makeEventsSelector)(rootElement$, childNamespace),
       isolateSource: _isolate.isolateSource,
       isolateSink: _isolate.isolateSink
@@ -4424,9 +4438,9 @@ function makeElementSelector(rootElement$) {
 }
 
 exports.makeElementSelector = makeElementSelector;
-exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
+exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
 
-},{"./events":44,"./isolate":48}],54:[function(require,module,exports){
+},{"./events":44,"./isolate":48,"./makeIsStrictlyInRootScope":51,"./modules/isolate":54,"./utils":57,"matches-selector":22}],56:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -4483,13 +4497,13 @@ function transposeVTree(vTree) {
 exports.transposeVTree = transposeVTree;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var SCOPE_PREFIX = "cycle-scope-";
+var SCOPE_PREFIX = "cycle-isolate-";
 
 var isElement = function isElement(obj) {
   return typeof HTMLElement === "object" ? obj instanceof HTMLElement || obj instanceof DocumentFragment : obj && typeof obj === "object" && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === "string";
@@ -4506,8 +4520,22 @@ var domSelectorParser = function domSelectorParser(selectors) {
   return domElement;
 };
 
+var getScope = function getScope(namespace) {
+  return namespace.filter(function (c) {
+    return c.indexOf(SCOPE_PREFIX) > -1;
+  }).slice(-1).join(" ").trim();
+};
+
+var getSelectors = function getSelectors(namespace) {
+  return namespace.filter(function (c) {
+    return c.indexOf(SCOPE_PREFIX) === -1;
+  }).join(" ");
+};
+
 exports.domSelectorParser = domSelectorParser;
 exports.SCOPE_PREFIX = SCOPE_PREFIX;
+exports.getScope = getScope;
+exports.getSelectors = getSelectors;
 
 },{}]},{},[47])(47)
 });

@@ -5,10 +5,18 @@ import EventsModule from 'snabbdom/modules/eventlisteners'
 import StyleModule from 'snabbdom/modules/style'
 import HeroModule from 'snabbdom/modules/hero'
 
-export default [StyleModule, ClassModule, PropsModule, AttrsModule]
+import {IsolateModule} from './isolate'
+
+export default [
+  StyleModule,
+  ClassModule,
+  PropsModule,
+  AttrsModule,
+]
 
 export {
   StyleModule, ClassModule,
   PropsModule, AttrsModule,
   HeroModule, EventsModule,
+  IsolateModule,
 }
