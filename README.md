@@ -2,7 +2,7 @@
 
 # Deprecation Warning
 
-** This library will be deprecated in favor of version 10 of [@cycle/dom](https://github.com/cyclejs/dom) which a direct port of this library to TypeScript with new features, performance improvements, and lots of bug fixes! **
+**This library will be deprecated in favor of version 10 of [@cycle/dom](https://github.com/cyclejs/dom) which a direct port of this library to TypeScript with new features, performance improvements, and lots of bug fixes!**
 
 Alternative DOM driver utilizing the [snabbdom](https://github.com/paldepind/snabbdom) library
 
