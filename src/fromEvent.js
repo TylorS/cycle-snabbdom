@@ -1,12 +1,11 @@
 import {Observable} from 'rx'
 
-function fromEvent(element, eventName, useCapture = false) {
+export function fromEvent (eventType, node, useCapture) {
   return Observable.create((observer) => {
-    const next = event => observer.onNext(event)
-    element.addEventListener(eventName, next, useCapture)
+    const listener = ev => observer.next(ev)
 
-    return () => element.removeEventListener(eventName, next, useCapture)
-  }).share()
+    node.addEventListener(eventType, listener, useCapture)
+
+    return () => node.removeEventListener(eventType, listener, useCapture)
+  })
 }
-
-export {fromEvent}
