@@ -1,107 +1,78 @@
-# Motorcycle.js DOM Driver [![Build Status](https://travis-ci.org/motorcyclejs/dom.svg?branch=develop)](https://travis-ci.org/motorcyclejs/dom)
-[![Motorcycle.js](https://img.shields.io/badge/Motorcycle.js-compatible-brightgreen.svg)](https://github.com/motorcyclejs)[![isolate](https://img.shields.io/badge/isolate-compatible-brightgreen.svg)](https://github.com/cyclejs/isolate)
+# cycle-snabbdom [![Build Status](https://travis-ci.org/TylorS/cycle-snabbdom.svg?branch=master)](https://travis-ci.org/TylorS/cycle-snabbdom)
 
-The Standard DOM Driver for Motorcycle. Built using [Snabbdom](https://github.com/paldepind/snabbdom) for it's modularity and it's faster *virtual-dom* implementation. This library exports the fantastic [hyperscript-helpers](https://github.com/ohanhi/hyperscript-helpers) library for ease-of-use.
+# Deprecation
 
-## Installing
-```
-$ npm install @motorcycle/dom
-```
+**It's been great, and thank you for using this library :)
+@cycle/dom is likely reached it's last release candidate, and will be released soon! This library is at 100% parity with it,
+and is actually a slight step ahead as it has updated to the latest snabbdom 0.5.0 in the process. However, this will be the very last update this library will see.
+I strongly urge you to start updating your application to Cycle.js Diversity as soon as you can, and to stop using Rx ;)**
 
-## Want to Contribute?
+Alternative DOM driver utilizing the [snabbdom](https://github.com/paldepind/snabbdom) library
 
-If you found an issue or want to contribute code, please read
-the [contributing guidelines](https://github.com/motorcyclejs/motorcycle/blob/master/CONTRIBUTING.md).
 
-## Examples
-Basic usage
-
+# Install
 ```js
-
-import most from 'most'
-import {run} from '@motorcycle/core'
-import {makeDOMDriver, h} from '@motorcycle/dom'
-
-function main(sources) {
-  ...
-  return {
-    DOM: view$,
-  }
-}
-
-run(main, {
-  DOM: makeDOMDriver('#app')
-})
+$ npm install cycle-snabbdom
 ```
-
-More examples can be found [here](https://github.com/motorcyclejs/examples).
-
 ## API
 
-### makeDOMDriver(container, {modules, transposition})
-
-###### Arguments
-
-**container** :: Element|CSS-Selector - A DOM node or a CSS-Selector which points to an existing DOM node that will be used as the initial place to patch the DOM.
-
-**modules** :: Array - An array of [Snabbdom modules](https://github.com/paldepind/snabbdom#creating-modules) which will be used by Snabbdom to add/remove behaviors that are available to you from the `h()` or `hyperscript-helpers` functions.
-
-**transposition** :: Boolean [= false] - a flag to turn on transposition or not.
+##### makeDOMDriver(container: string|Element, {modules?: Array<SnabbdomModules>})
 
 ```js
-import {makeDOMDriver} from '@motorcycle/dom'
-
-makeDOMDriver('#app')
-// or
-makeDOMDriver(document.querySelector('#app'))
-
-/* with modules */
-/* these are the default modules used */
-makeDOMDriver('#app', [
-  require(`snabbdom/modules/class`),
-  require(`snabbdom/modules/props`),
-  require(`snabbdom/modules/attributes`),
-  require(`snabbdom/modules/style`),
-])
+import {makeDOMDriver} from 'cycle-snabbdom'
 ```
 
-### snabbdom - h() / thunk()
-
-###### Importing
+##### makeHTMLDriver()
 ```js
-import {h, thunk} from '@motorcycle/dom'
+import {makeHTMLDriver} from 'cycle-snabbdom'
 ```
-
-For more information on how to use `h()`, please refer to the [original documentation](https://github.com/paldepind/snabbdom#snabbdomh).
-
-For more information on how to use `thunk)`, please refer to the [original documentation](https://github.com/paldepind/snabbdom#thunks)
-
-### hyperscript-helpers
-
-###### Importing
+##### h - thunk - hyperscript-helpers
+Shorcuts to `snabbdom/h`, `snabbdom/thunk` and `hyperscript-helpers`
 ```js
-import {div, h1, p} from '@motorcycle/dom'
+import {h, thunk, div, span, h4} from 'cycle-snabbdom'
 ```
 
-For more information on [how to use hyperscript-helpers](https://github.com/ohanhi/hyperscript-helpers#how-to-use).
+##### modules : Array<SnabbdomModules>
 
-###### mockDOMSource()
+Shortcut to snabbdom modules.
+
+```js
+import Cycle from '@cycle/core'
+import {modules, makeDOMDriver} from 'cycle-snabbdom'
+const {
+  StyleModule, PropsModule,
+  AttrsModule, ClassModule,
+  HeroModule, EventsModule,
+} = modules
+...
+
+Cycle.run(main, {
+  DOM: makeDOMDriver('#app', {modules: [
+    StyleModule, PropsModule,
+    AttrsModule, ClassModule,
+    HeroModule, EventsModule
+  ]})
+})
+
+```
+
+##### mockDOMSource()
 A testing utility which aids in creating a queryable collection of Observables. Call mockDOMSource giving it an object specifying selectors, eventTypes and their Observables, and get as output an object following the same format as the DOM Driver's source.
 
 Example:
 ```js
 const userEvents = mockDOMSource({
  '.foo': {
-   'click': most.just({target: {}}),
-   'mouseover': most.just({target: {}})
+   'click': Rx.Observable.just({target: {}}),
+   'mouseover': Rx.Observable.just({target: {}})
  },
  '.bar': {
-   'scroll': most.just({target: {}})
+   'scroll': Rx.Observable.just({target: {}})
  }
 });
 
 // Usage
-const click$ = userEvents.select('.foo').events('click')
+const click$ = userEvents.select('.foo').events('click');
 ```
 Arguments:
 
