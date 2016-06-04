@@ -5,5 +5,4 @@ node_modules
 npm-debug.log
 
 test/browser/page/*.js
-test/bundle.js
 lib/

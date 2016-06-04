@@ -107,53 +107,6 @@ module.exports = (function split(undef) {
 })();
 
 },{}],2:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-var isValidString = function isValidString(param) {
-  return typeof param === 'string' && param.length > 0;
-};
-
-var startsWith = function startsWith(string, start) {
-  return string[0] === start;
-};
-
-var isSelector = function isSelector(param) {
-  return isValidString(param) && (startsWith(param, '.') || startsWith(param, '#'));
-};
-
-var node = function node(h) {
-  return function (tagName) {
-    return function (first) {
-      for (var _len = arguments.length, rest = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        rest[_key - 1] = arguments[_key];
-      }
-
-      if (isSelector(first)) {
-        return h.apply(undefined, [tagName + first].concat(rest));
-      } else {
-        return h.apply(undefined, [tagName, first].concat(rest));
-      }
-    };
-  };
-};
-
-var TAG_NAMES = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'p', 'param', 'pre', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'title', 'tr', 'u', 'ul', 'video'];
-
-exports['default'] = function (h) {
-  var createTag = node(h);
-  var exported = { TAG_NAMES: TAG_NAMES, isSelector: isSelector, createTag: createTag };
-  TAG_NAMES.forEach(function (n) {
-    exported[n] = createTag(n);
-  });
-  return exported;
-};
-
-module.exports = exports['default'];
-
-},{}],3:[function(require,module,exports){
 /**
  * lodash 3.1.4 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -286,7 +239,7 @@ function isLength(value) {
 
 module.exports = baseFlatten;
 
-},{"lodash.isarguments":15,"lodash.isarray":16}],4:[function(require,module,exports){
+},{"lodash.isarguments":14,"lodash.isarray":15}],3:[function(require,module,exports){
 /**
  * lodash 3.0.3 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -336,7 +289,7 @@ function createBaseFor(fromRight) {
 
 module.exports = baseFor;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * lodash 3.1.0 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -395,7 +348,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = baseIndexOf;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * lodash 3.0.3 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -465,7 +418,7 @@ function baseUniq(array, iteratee) {
 
 module.exports = baseUniq;
 
-},{"lodash._baseindexof":5,"lodash._cacheindexof":8,"lodash._createcache":9}],7:[function(require,module,exports){
+},{"lodash._baseindexof":4,"lodash._cacheindexof":7,"lodash._createcache":8}],6:[function(require,module,exports){
 /**
  * lodash 3.0.1 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -532,7 +485,7 @@ function identity(value) {
 
 module.exports = bindCallback;
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * lodash 3.0.2 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -587,7 +540,7 @@ function isObject(value) {
 
 module.exports = cacheIndexOf;
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 /**
  * lodash 3.1.2 (Custom Build) <https://lodash.com/>
@@ -682,7 +635,7 @@ SetCache.prototype.push = cachePush;
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lodash._getnative":10}],10:[function(require,module,exports){
+},{"lodash._getnative":9}],9:[function(require,module,exports){
 /**
  * lodash 3.9.1 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -821,7 +774,7 @@ function isNative(value) {
 
 module.exports = getNative;
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 /**
  * lodash 3.0.1 (Custom Build) <https://lodash.com/>
@@ -884,7 +837,7 @@ function checkGlobal(value) {
 module.exports = root;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * lodash 3.2.0 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -1069,7 +1022,7 @@ function deburr(string) {
 
 module.exports = deburr;
 
-},{"lodash._root":11}],13:[function(require,module,exports){
+},{"lodash._root":10}],12:[function(require,module,exports){
 /**
  * lodash 3.2.0 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -1251,7 +1204,7 @@ function escape(string) {
 
 module.exports = escape;
 
-},{"lodash._root":11}],14:[function(require,module,exports){
+},{"lodash._root":10}],13:[function(require,module,exports){
 /**
  * lodash 3.0.2 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -1324,7 +1277,7 @@ var forOwn = createForOwn(baseForOwn);
 
 module.exports = forOwn;
 
-},{"lodash._basefor":4,"lodash._bindcallback":7,"lodash.keys":18}],15:[function(require,module,exports){
+},{"lodash._basefor":3,"lodash._bindcallback":6,"lodash.keys":17}],14:[function(require,module,exports){
 /**
  * lodash 3.0.8 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -1569,7 +1522,7 @@ function isObjectLike(value) {
 
 module.exports = isArguments;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * lodash 3.0.4 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -1751,7 +1704,7 @@ function isNative(value) {
 
 module.exports = isArray;
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * lodash 3.1.1 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -1825,7 +1778,7 @@ var kebabCase = createCompounder(function(result, word, index) {
 
 module.exports = kebabCase;
 
-},{"lodash.deburr":12,"lodash.words":21}],18:[function(require,module,exports){
+},{"lodash.deburr":11,"lodash.words":20}],17:[function(require,module,exports){
 /**
  * lodash 3.1.2 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -2063,7 +2016,7 @@ function keysIn(object) {
 
 module.exports = keys;
 
-},{"lodash._getnative":10,"lodash.isarguments":15,"lodash.isarray":16}],19:[function(require,module,exports){
+},{"lodash._getnative":9,"lodash.isarguments":14,"lodash.isarray":15}],18:[function(require,module,exports){
 /**
  * lodash 3.6.1 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -2132,7 +2085,7 @@ function restParam(func, start) {
 
 module.exports = restParam;
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * lodash 3.1.0 (Custom Build) <https://lodash.com/>
  * Build: `lodash modern modularize exports="npm" -o ./`
@@ -2169,7 +2122,7 @@ var union = restParam(function(arrays) {
 
 module.exports = union;
 
-},{"lodash._baseflatten":3,"lodash._baseuniq":6,"lodash.restparam":19}],21:[function(require,module,exports){
+},{"lodash._baseflatten":2,"lodash._baseuniq":5,"lodash.restparam":18}],20:[function(require,module,exports){
 /**
  * lodash 3.2.0 (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -2369,7 +2322,7 @@ function words(string, pattern, guard) {
 
 module.exports = words;
 
-},{"lodash._root":11}],22:[function(require,module,exports){
+},{"lodash._root":10}],21:[function(require,module,exports){
 'use strict';
 
 var proto = Element.prototype;
@@ -2399,7 +2352,7 @@ function match(el, selector) {
   }
   return false;
 }
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2418,6 +2371,7 @@ function classNameFromVNode(vNode) {
 
   var cn = _selectorParser.className;
 
+
   if (!vNode.data) {
     return cn;
   }
@@ -2425,6 +2379,7 @@ function classNameFromVNode(vNode) {
   var _vNode$data = vNode.data;
   var dataClass = _vNode$data.class;
   var props = _vNode$data.props;
+
 
   if (dataClass) {
     var c = Object.keys(vNode.data.class).filter(function (cl) {
@@ -2439,7 +2394,7 @@ function classNameFromVNode(vNode) {
 
   return cn.trim();
 }
-},{"./selectorParser":24}],24:[function(require,module,exports){
+},{"./selectorParser":23}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2459,7 +2414,7 @@ var notClassId = /^\.|#/;
 function selectorParser() {
   var selector = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
 
-  var tagName = undefined;
+  var tagName = void 0;
   var id = '';
   var classes = [];
 
@@ -2469,9 +2424,9 @@ function selectorParser() {
     tagName = 'div';
   }
 
-  var part = undefined;
-  var type = undefined;
-  var i = undefined;
+  var part = void 0;
+  var type = void 0;
+  var i = void 0;
 
   for (i = 0; i < tagParts.length; i++) {
     part = tagParts[i];
@@ -2497,7 +2452,7 @@ function selectorParser() {
     className: classes.join(' ')
   };
 }
-},{"browser-split":1}],25:[function(require,module,exports){
+},{"browser-split":1}],24:[function(require,module,exports){
 
 // All SVG children elements, not in this list, should self-close
 
@@ -2520,12 +2475,12 @@ module.exports = {
   'metadata': true,
   'title': true
 };
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 
 var init = require('./init');
 
 module.exports = init([require('./modules/attributes'), require('./modules/style')]);
-},{"./init":27,"./modules/attributes":28,"./modules/style":29}],27:[function(require,module,exports){
+},{"./init":26,"./modules/attributes":27,"./modules/style":28}],26:[function(require,module,exports){
 
 var parseSelector = require('./parse-selector');
 var VOID_ELEMENTS = require('./void-elements');
@@ -2585,7 +2540,7 @@ module.exports = function init(modules) {
     return tag.join('');
   };
 };
-},{"./container-elements":25,"./parse-selector":30,"./void-elements":31}],28:[function(require,module,exports){
+},{"./container-elements":24,"./parse-selector":29,"./void-elements":30}],27:[function(require,module,exports){
 
 var forOwn = require('lodash.forown');
 var escape = require('lodash.escape');
@@ -2650,7 +2605,7 @@ function setAttributes(values, target) {
     target[key] = value;
   });
 }
-},{"../parse-selector":30,"lodash.escape":13,"lodash.forown":14,"lodash.union":20}],29:[function(require,module,exports){
+},{"../parse-selector":29,"lodash.escape":12,"lodash.forown":13,"lodash.union":19}],28:[function(require,module,exports){
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var forOwn = require('lodash.forown');
@@ -2677,7 +2632,7 @@ module.exports = function style(vnode) {
 
   return styles.length ? 'style="' + styles.join('; ') + '"' : '';
 };
-},{"lodash.escape":13,"lodash.forown":14,"lodash.kebabcase":17}],30:[function(require,module,exports){
+},{"lodash.escape":12,"lodash.forown":13,"lodash.kebabcase":16}],29:[function(require,module,exports){
 
 // https://github.com/Matt-Esch/virtual-dom/blob/master/virtual-hyperscript/parse-tag.js
 
@@ -2724,7 +2679,7 @@ module.exports = function parseSelector(selector, upper) {
     className: classes.join(' ')
   };
 };
-},{"browser-split":1}],31:[function(require,module,exports){
+},{"browser-split":1}],30:[function(require,module,exports){
 
 // http://www.w3.org/html/wg/drafts/html/master/syntax.html#void-elements
 
@@ -2745,42 +2700,7 @@ module.exports = {
   track: true,
   wbr: true
 };
-},{}],32:[function(require,module,exports){
-var VNode = require('./vnode');
-var is = require('./is');
-
-function addNS(data, children) {
-  data.ns = 'http://www.w3.org/2000/svg';
-  if (children !== undefined) {
-    for (var i = 0; i < children.length; ++i) {
-      addNS(children[i].data, children[i].children);
-    }
-  }
-}
-
-module.exports = function h(sel, b, c) {
-  var data = {}, children, text, i;
-  if (arguments.length === 3) {
-    data = b;
-    if (is.array(c)) { children = c; }
-    else if (is.primitive(c)) { text = c; }
-  } else if (arguments.length === 2) {
-    if (is.array(b)) { children = b; }
-    else if (is.primitive(b)) { text = b; }
-    else { data = b; }
-  }
-  if (is.array(children)) {
-    for (i = 0; i < children.length; ++i) {
-      if (is.primitive(children[i])) children[i] = VNode(undefined, undefined, undefined, children[i]);
-    }
-  }
-  if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g') {
-    addNS(data, children);
-  }
-  return VNode(sel, data, children, text, undefined);
-};
-
-},{"./is":34,"./vnode":43}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 function createElement(tagName){
   return document.createElement(tagName);
 }
@@ -2836,13 +2756,13 @@ module.exports = {
   setTextContent: setTextContent
 };
 
-},{}],34:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = {
   array: Array.isArray,
   primitive: function(s) { return typeof s === 'string' || typeof s === 'number'; },
 };
 
-},{}],35:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var booleanAttrs = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "compact", "controls", "declare", 
                 "default", "defaultchecked", "defaultmuted", "defaultselected", "defer", "disabled", "draggable", 
                 "enabled", "formnovalidate", "hidden", "indeterminate", "inert", "ismap", "itemscope", "loop", "multiple", 
@@ -2883,7 +2803,7 @@ function updateAttrs(oldVnode, vnode) {
 
 module.exports = {create: updateAttrs, update: updateAttrs};
 
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 function updateClass(oldVnode, vnode) {
   var cur, name, elm = vnode.elm,
       oldClass = oldVnode.data.class || {},
@@ -2903,18 +2823,43 @@ function updateClass(oldVnode, vnode) {
 
 module.exports = {create: updateClass, update: updateClass};
 
-},{}],37:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
+function updateDataset(oldVnode, vnode) {
+  var elm = vnode.elm,
+    oldDataset = oldVnode.data.dataset || {},
+    dataset = vnode.data.dataset || {},
+    key
+
+  for (key in oldDataset) {
+    if (!dataset[key]) {
+      delete elm.dataset[key];
+    }
+  }
+  for (key in dataset) {
+    if (oldDataset[key] !== dataset[key]) {
+      elm.dataset[key] = dataset[key];
+    }
+  }
+}
+
+module.exports = {create: updateDataset, update: updateDataset}
+
+},{}],36:[function(require,module,exports){
 var is = require('../is');
 
 function arrInvoker(arr) {
   return function() {
+    if (!arr.length) return;
     // Special case when length is two, for performance
     arr.length === 2 ? arr[0](arr[1]) : arr[0].apply(undefined, arr.slice(1));
   };
 }
 
 function fnInvoker(o) {
-  return function(ev) { o.fn(ev); };
+  return function(ev) { 
+    if (o.fn === null) return;
+    o.fn(ev); 
+  };
 }
 
 function updateEventListeners(oldVnode, vnode) {
@@ -2942,11 +2887,24 @@ function updateEventListeners(oldVnode, vnode) {
       on[name] = old;
     }
   }
+  if (oldOn) {
+    for (name in oldOn) {
+      if (on[name] === undefined) {
+        var old = oldOn[name];
+        if (is.array(old)) {
+          old.length = 0;
+        }
+        else {
+          old.fn = null;
+        }
+      }
+    }
+  }
 }
 
 module.exports = {create: updateEventListeners, update: updateEventListeners};
 
-},{"../is":34}],38:[function(require,module,exports){
+},{"../is":32}],37:[function(require,module,exports){
 var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
@@ -3100,7 +3058,7 @@ function post() {
 
 module.exports = {pre: pre, create: create, destroy: destroy, post: post};
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 function updateProps(oldVnode, vnode) {
   var key, cur, old, elm = vnode.elm,
       oldProps = oldVnode.data.props || {}, props = vnode.data.props || {};
@@ -3120,7 +3078,7 @@ function updateProps(oldVnode, vnode) {
 
 module.exports = {create: updateProps, update: updateProps};
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function(fn) { raf(function() { raf(fn); }); };
 
@@ -3186,14 +3144,14 @@ function applyRemoveStyle(vnode, rm) {
 
 module.exports = {create: updateStyle, update: updateStyle, destroy: applyDestroyStyle, remove: applyRemoveStyle};
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 // jshint newcap: false
 /* global require, module, document, Node */
 'use strict';
 
 var VNode = require('./vnode');
 var is = require('./is');
-var domApi = require('./htmldomapi.js');
+var domApi = require('./htmldomapi');
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -3241,12 +3199,11 @@ function init(modules, api) {
   }
 
   function createElm(vnode, insertedVnodeQueue) {
-    var i, thunk, data = vnode.data;
+    var i, data = vnode.data;
     if (isDef(data)) {
-      if (isDef(i = data.hook) && isDef(i = i.init)) i(vnode);
-      if (isDef(i = data.vnode)) {
-          thunk = vnode;
-          vnode = i;
+      if (isDef(i = data.hook) && isDef(i = i.init)) {
+        i(vnode);
+        data = vnode.data;
       }
     }
     var elm, children = vnode.children, sel = vnode.sel;
@@ -3277,7 +3234,6 @@ function init(modules, api) {
     } else {
       elm = vnode.elm = api.createTextNode(vnode.text);
     }
-    if (isDef(thunk)) thunk.elm = vnode.elm;
     return vnode.elm;
   }
 
@@ -3297,7 +3253,6 @@ function init(modules, api) {
           invokeDestroyHook(vnode.children[j]);
         }
       }
-      if (isDef(i = data.vnode)) invokeDestroyHook(i);
     }
   }
 
@@ -3383,12 +3338,6 @@ function init(modules, api) {
     if (isDef(i = vnode.data) && isDef(hook = i.hook) && isDef(i = hook.prepatch)) {
       i(oldVnode, vnode);
     }
-    if (isDef(i = oldVnode.data) && isDef(i = i.vnode)) oldVnode = i;
-    if (isDef(i = vnode.data) && isDef(i = i.vnode)) {
-      patchVnode(oldVnode, i, insertedVnodeQueue);
-      vnode.elm = i.elm;
-      return;
-    }
     var elm = vnode.elm = oldVnode.elm, oldCh = oldVnode.children, ch = vnode.children;
     if (oldVnode === vnode) return;
     if (!sameVnode(oldVnode, vnode)) {
@@ -3455,84 +3404,263 @@ function init(modules, api) {
 
 module.exports = {init: init};
 
-},{"./htmldomapi.js":33,"./is":34,"./vnode":43}],42:[function(require,module,exports){
-var h = require('./h');
-
-function init(thunk) {
-  var i, cur = thunk.data;
-  cur.vnode = cur.fn.apply(undefined, cur.args);
-}
-
-function prepatch(oldThunk, thunk) {
-  var i, old = oldThunk.data, cur = thunk.data;
-  var oldArgs = old.args, args = cur.args;
-  cur.vnode = old.vnode;
-  if (old.fn !== cur.fn || oldArgs.length !== args.length) {
-    cur.vnode = cur.fn.apply(undefined, args);
-    return;
-  }
-  for (i = 0; i < args.length; ++i) {
-    if (oldArgs[i] !== args[i]) {
-      cur.vnode = cur.fn.apply(undefined, args);
-      return;
-    }
-  }
-}
-
-module.exports = function(name, fn /* args */) {
-  var i, args = [];
-  for (i = 2; i < arguments.length; ++i) {
-    args[i - 2] = arguments[i];
-  }
-  return h('thunk' + name, {
-    hook: {init: init, prepatch: prepatch},
-    fn: fn, args: args,
-  });
-};
-
-},{"./h":32}],43:[function(require,module,exports){
+},{"./htmldomapi":31,"./is":32,"./vnode":41}],41:[function(require,module,exports){
 module.exports = function(sel, data, children, text, elm) {
   var key = data === undefined ? undefined : data.key;
   return {sel: sel, data: data, children: children,
           text: text, elm: elm, key: key};
 };
 
-},{}],44:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeEventsSelector = undefined;
+exports.DOMSource = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
 
 var _fromEvent = require('./fromEvent');
 
-var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
+var _isolation = require('./isolate/isolation');
 
-var _utils = require('./utils');
+var _EventDelegator = require('./EventDelegator');
 
-var _isolate = require('./modules/isolate');
+var _ElementFinder = require('./ElementFinder');
 
-var matchesSelector = void 0;
-try {
-  matchesSelector = require('matches-selector');
-} catch (e) {
-  matchesSelector = function matchesSelector() {};
+var _util = require('./util');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function determineUseCapture(eventType, options) {
+  var result = false;
+  if (typeof options.useCapture === 'boolean') {
+    result = options.useCapture;
+  }
+
+  if (_util.eventTypesThatDontBubble.indexOf(eventType) !== -1) {
+    result = true;
+  }
+
+  return result;
 }
 
-var eventTypesThatDontBubble = ['load', 'unload', 'focus', 'blur', 'mouseenter', 'mouseleave', 'submit', 'change', 'reset', 'timeupdate', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'durationchange', 'play', 'pause', 'ratechange', 'volumechange', 'suspend', 'emptied', 'stalled'];
+var DOMSource = exports.DOMSource = function () {
+  function DOMSource(rootElement$, namespace, isolateModule, delegators) {
+    _classCallCheck(this, DOMSource);
 
-function maybeMutateEventPropagationAttributes(event) {
-  if (!event.hasOwnProperty('propagationHasBeenStopped')) {
-    (function () {
-      event.propagationHasBeenStopped = false;
-      var oldStopPropagation = event.stopPropagation;
-      event.stopPropagation = function stopPropagation() {
-        oldStopPropagation.call(this);
-        this.propagationHasBeenStopped = true;
-      };
-    })();
+    this._rootElement$ = rootElement$;
+    this._namespace = namespace;
+    this._isolateModule = isolateModule;
+    this._delegators = delegators;
   }
+
+  _createClass(DOMSource, [{
+    key: 'select',
+    value: function select(selector) {
+      if (typeof selector !== 'string') {
+        throw new Error('DOM driver\'s select() expects the argument to be a ' + 'string as a CSS selector');
+      }
+
+      var trimmedSelector = selector.trim();
+      var childNamespace = trimmedSelector === ':root' ? this._namespace : this._namespace.concat(trimmedSelector);
+
+      return new DOMSource(this._rootElement$, childNamespace, this._isolateModule, this._delegators);
+    }
+  }, {
+    key: 'events',
+    value: function events(eventType) {
+      var _this = this;
+
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      // eslint-disable-line complexity
+      if (typeof eventType !== 'string') {
+        throw new Error('DOM driver\'s events() expects argument to be a ' + 'string representing the event type to listen for.');
+      }
+      var useCapture = determineUseCapture(eventType, options);
+
+      var namespace = this._namespace;
+      var scope = (0, _util.getScope)(namespace);
+      var key = scope ? eventType + '~' + useCapture + '~' + scope : eventType + '~' + useCapture;
+
+      var domSource = this;
+
+      var rootElement$ = void 0;
+      if (scope) {
+        (function () {
+          var hadIsolatedMutable = false;
+          rootElement$ = _this._rootElement$.filter(function filterScopedElements(rootElement) {
+            var hasIsolated = !!domSource._isolateModule.getIsolatedElement(scope);
+            var shouldPass = hasIsolated && !hadIsolatedMutable;
+            hadIsolatedMutable = hasIsolated;
+            return shouldPass;
+          });
+        })();
+      } else {
+        rootElement$ = this._rootElement$.take(2);
+      }
+
+      return rootElement$.flatMapLatest(function setupEventDelegators(rootElement) {
+        if (!namespace || namespace.length === 0) {
+          return (0, _fromEvent.fromEvent)(eventType, rootElement, useCapture);
+        }
+
+        var delegators = domSource._delegators;
+
+        var top = scope ? domSource._isolateModule.getIsolatedElement(scope) : rootElement;
+
+        var delegator = void 0;
+        if (delegators.has(key)) {
+          delegator = delegators.get(key);
+          delegator.updateTopElement(top);
+        } else {
+          delegator = new _EventDelegator.EventDelegator(top, eventType, useCapture, domSource._isolateModule);
+          delegators.set(key, delegator);
+        }
+        var stream = new _rx.Subject();
+
+        if (scope) {
+          domSource._isolateModule.addEventDelegator(scope, delegator);
+        }
+
+        delegator.addDestination(stream, namespace);
+
+        return stream;
+      }).share();
+    }
+  }, {
+    key: 'dispose',
+    value: function dispose() {
+      this._isolateModule.reset();
+    }
+  }, {
+    key: 'isolateSource',
+    value: function isolateSource(source, scope) {
+      return (0, _isolation.isolateSource)(source, scope);
+    }
+  }, {
+    key: 'isolateSink',
+    value: function isolateSink(sink, scope) {
+      return (0, _isolation.isolateSink)(sink, scope);
+    }
+  }, {
+    key: 'elements',
+    get: function get() {
+      if (this._namespace.length === 0) {
+        return this._rootElement$;
+      }
+
+      var elementFinder = new _ElementFinder.ElementFinder(this._namespace, this._isolateModule);
+
+      return this._rootElement$.map(function (el) {
+        return elementFinder.call(el);
+      });
+    }
+  }, {
+    key: 'namespace',
+    get: function get() {
+      return this._namespace;
+    }
+  }]);
+
+  return DOMSource;
+}();
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./ElementFinder":43,"./EventDelegator":44,"./fromEvent":47,"./isolate/isolation":52,"./util":59}],43:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ElementFinder = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ScopeChecker = require('./ScopeChecker');
+
+var _util = require('./util');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function toElementArray(nodeList) {
+  var length = nodeList.length;
+  var arr = Array(length);
+
+  for (var i = 0; i < length; ++i) {
+    arr[i] = nodeList[i];
+  }
+
+  return arr;
+}
+
+var ElementFinder = exports.ElementFinder = function () {
+  function ElementFinder(namespace, isolateModule) {
+    _classCallCheck(this, ElementFinder);
+
+    this.namespace = namespace;
+    this.isolateModule = isolateModule;
+  }
+
+  _createClass(ElementFinder, [{
+    key: 'call',
+    value: function call(rootElement) {
+      // eslint-disable-line complexity
+      var namespace = this.namespace;
+      if (namespace.join('') === '') {
+        return rootElement;
+      }
+
+      var scope = (0, _util.getScope)(namespace);
+      var selector = (0, _util.getSelectors)(namespace);
+      var scopeChecker = new _ScopeChecker.ScopeChecker(scope, this.isolateModule);
+
+      var topNode = rootElement;
+      var topNodeMatches = [];
+
+      if (scope.length > 0) {
+        topNode = this.isolateModule.getIsolatedElement(scope) || rootElement;
+        if (selector && (0, _util.matchesSelector)(topNode, selector)) {
+          topNodeMatches[0] = topNode;
+        }
+      }
+
+      return toElementArray(topNode.querySelectorAll(selector)).filter(scopeChecker.isStrictlyInRootScope, scopeChecker).concat(topNodeMatches);
+    }
+  }]);
+
+  return ElementFinder;
+}();
+
+},{"./ScopeChecker":45,"./util":59}],44:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EventDelegator = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _ScopeChecker = require('./ScopeChecker');
+
+var _util = require('./util');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function patchEvent(event) {
+  var pEvent = event;
+  pEvent.propagationHasBeenStopped = false;
+  var oldStopPropagation = pEvent.stopPropagation;
+  pEvent.stopPropagation = function stopPropagation() {
+    oldStopPropagation.call(this);
+    this.propagationHasBeenStopped = true;
+  };
+  return pEvent;
 }
 
 function mutateEventCurrentTarget(event, currentTargetElement) {
@@ -3547,98 +3675,237 @@ function mutateEventCurrentTarget(event, currentTargetElement) {
   event.ownerTarget = currentTargetElement;
 }
 
-function makeSimulateBubbling(namespace, rootEl) {
-  var scope = (0, _utils.getScope)(namespace);
-  var isStrictlyInRootScope = (0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(scope);
-  var selector = (0, _utils.getSelectors)(namespace);
-  var roof = rootEl.parentElement;
+var EventDelegator = exports.EventDelegator = function () {
+  function EventDelegator(topElement, eventType, useCapture, isolateModule) {
+    var _this = this;
 
-  return function simulateBubbling(ev) {
-    maybeMutateEventPropagationAttributes(ev);
-    if (ev.propagationHasBeenStopped) {
-      return false;
+    _classCallCheck(this, EventDelegator);
+
+    this.topElement = topElement;
+    this.eventType = eventType;
+    this.useCapture = useCapture;
+    this.isolateModule = isolateModule;
+    this.roof = topElement.parentElement;
+    this.destinations = [];
+
+    if (useCapture) {
+      this.domListener = function (ev) {
+        return _this.capture(ev);
+      };
+    } else {
+      this.domListener = function (ev) {
+        return _this.bubble(ev);
+      };
     }
-    for (var el = ev.target; el && el !== roof; el = el.parentElement) {
-      if (!isStrictlyInRootScope(el)) {
-        continue;
+
+    topElement.addEventListener(eventType, this.domListener, useCapture);
+  }
+
+  _createClass(EventDelegator, [{
+    key: 'bubble',
+    value: function bubble(rawEvent) {
+      if (!document.body.contains(rawEvent.currentTarget)) {
+        return;
       }
-      if (matchesSelector(el, selector)) {
-        mutateEventCurrentTarget(ev, el);
-        return true;
+      var ev = patchEvent(rawEvent);
+
+      for (var el = ev.target; el && el !== this.roof; el = el.parentElement) {
+        if (ev.propagationHasBeenStopped) {
+          return;
+        }
+        this.matchEventAgainstDestinations(el, ev);
       }
     }
-    return false;
-  };
-}
-
-function makeEventsSelector(rootElement$, namespace) {
-  return function eventsSelector(type) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    if (typeof type !== 'string') {
-      throw new Error('DOM driver\'s events() expects argument to be a ' + 'string representing the event type to listen for.');
-    }
-    var useCapture = false;
-    if (eventTypesThatDontBubble.indexOf(type) !== -1) {
-      useCapture = true;
-    }
-    if (typeof options.useCapture === 'boolean') {
-      useCapture = options.useCapture;
-    }
-
-    var scope = (0, _utils.getScope)(namespace);
-    return rootElement$.first().flatMapLatest(function (rootElement) {
-      if (!namespace || namespace.length === 0) {
-        return (0, _fromEvent.fromEvent)(rootElement, type, useCapture);
+  }, {
+    key: 'matchEventAgainstDestinations',
+    value: function matchEventAgainstDestinations(el, ev) {
+      for (var i = 0, n = this.destinations.length; i < n; ++i) {
+        var dest = this.destinations[i];
+        if (!dest.scopeChecker.isStrictlyInRootScope(el)) {
+          continue;
+        }
+        if ((0, _util.matchesSelector)(el, dest.selector)) {
+          mutateEventCurrentTarget(ev, el);
+          dest.subject.onNext(ev);
+        }
       }
-      var topNode = (0, _isolate.getIsolatedElements)()[scope] || rootElement;
-      var simulateBubbling = makeSimulateBubbling(namespace, rootElement);
-      return (0, _fromEvent.fromEvent)(topNode, type, useCapture).filter(simulateBubbling);
-    }).share();
-  };
-}
+    }
+  }, {
+    key: 'capture',
+    value: function capture(ev) {
+      for (var i = 0, n = this.destinations.length; i < n; i++) {
+        var dest = this.destinations[i];
+        if ((0, _util.matchesSelector)(ev.target, dest.selector)) {
+          dest.subject.onNext(ev);
+        }
+      }
+    }
+  }, {
+    key: 'addDestination',
+    value: function addDestination(subject, namespace) {
+      var scope = (0, _util.getScope)(namespace);
+      var selector = (0, _util.getSelectors)(namespace);
+      var scopeChecker = new _ScopeChecker.ScopeChecker(scope, this.isolateModule);
+      this.destinations.push({ subject: subject, scopeChecker: scopeChecker, selector: selector });
+    }
+  }, {
+    key: 'updateTopElement',
+    value: function updateTopElement(newTopElement) {
+      var eventType = this.eventType;
+      var domListener = this.domListener;
+      var useCapture = this.useCapture;
+      this.topElement.removeEventListener(eventType, domListener, useCapture);
+      newTopElement.addEventListener(eventType, domListener, useCapture);
+      this.topElement = newTopElement;
+    }
+  }]);
 
-exports.makeEventsSelector = makeEventsSelector;
+  return EventDelegator;
+}();
 
-},{"./fromEvent":45,"./makeIsStrictlyInRootScope":51,"./modules/isolate":54,"./utils":57,"matches-selector":22}],45:[function(require,module,exports){
-(function (global){
-'use strict';
+},{"./ScopeChecker":45,"./util":59}],45:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fromEvent = undefined;
 
-var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function fromEvent(element, eventName) {
-  var useCapture = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  return _rx.Observable.create(function (observer) {
-    var next = function next(event) {
-      return observer.onNext(event);
-    };
-    element.addEventListener(eventName, next, useCapture);
+var ScopeChecker = exports.ScopeChecker = function () {
+  function ScopeChecker(scope, isolateModule) {
+    _classCallCheck(this, ScopeChecker);
 
-    return function () {
-      return element.removeEventListener(eventName, next, useCapture);
-    };
-  }).share();
-}
+    this.scope = scope;
+    this.isolateModule = isolateModule;
+  }
 
-exports.fromEvent = fromEvent;
+  _createClass(ScopeChecker, [{
+    key: "isStrictlyInRootScope",
+    value: function isStrictlyInRootScope(leaf) {
+      // eslint-disable-line complexity
+      for (var el = leaf; el; el = el.parentElement) {
+        var scope = this.isolateModule.isIsolatedElement(el);
+        if (scope && scope !== this.scope) {
+          return false;
+        }
+        if (scope) {
+          return true;
+        }
+      }
+      return true;
+    }
+  }]);
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+  return ScopeChecker;
+}();
+
 },{}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.VNodeWrapper = undefined;
 
-var _vnode = require('snabbdom/vnode');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _vnode2 = _interopRequireDefault(_vnode);
+var _h = require('./hyperscript/h');
+
+var _classNameFromVNode = require('snabbdom-selector/lib/classNameFromVNode');
+
+var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
+
+var _selectorParser2 = require('snabbdom-selector/lib/selectorParser');
+
+var _selectorParser3 = _interopRequireDefault(_selectorParser2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var VNodeWrapper = exports.VNodeWrapper = function () {
+  function VNodeWrapper(rootElement) {
+    _classCallCheck(this, VNodeWrapper);
+
+    this.rootElement = rootElement;
+  }
+
+  _createClass(VNodeWrapper, [{
+    key: 'call',
+    value: function call(vnode) {
+      // eslint-disable-line complexity
+
+      var _selectorParser = (0, _selectorParser3.default)(vnode.sel);
+
+      var selectorTagName = _selectorParser.tagName;
+      var selectorId = _selectorParser.id;
+
+      var vNodeClassName = (0, _classNameFromVNode2.default)(vnode);
+      var vNodeData = vnode.data || {};
+      var vNodeDataProps = vNodeData.props || {};
+      var _vNodeDataProps$id = vNodeDataProps.id;
+      var vNodeId = _vNodeDataProps$id === undefined ? selectorId : _vNodeDataProps$id;
+
+
+      var isVNodeAndRootElementIdentical = vNodeId.toLowerCase() === this.rootElement.id.toLowerCase() && selectorTagName.toLowerCase() === this.rootElement.tagName.toLowerCase() && vNodeClassName.toLowerCase() === this.rootElement.className.toLowerCase();
+
+      if (isVNodeAndRootElementIdentical) {
+        return vnode;
+      }
+
+      var _rootElement = this.rootElement;
+      var tagName = _rootElement.tagName;
+      var id = _rootElement.id;
+      var className = _rootElement.className;
+
+
+      var elementId = id ? '#' + id : '';
+
+      var elementClassName = className ? '.' + className.split(' ').join('.') : '';
+
+      return (0, _h.h)('' + tagName + elementId + elementClassName, {}, [vnode]);
+    }
+  }]);
+
+  return VNodeWrapper;
+}();
+
+},{"./hyperscript/h":48,"snabbdom-selector/lib/classNameFromVNode":22,"snabbdom-selector/lib/selectorParser":23}],47:[function(require,module,exports){
+(function (global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.fromEvent = fromEvent;
+
+var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
+
+function fromEvent(eventType, node, useCapture) {
+  return _rx.Observable.create(function (observer) {
+    var listener = function listener(ev) {
+      return observer.next(ev);
+    };
+
+    node.addEventListener(eventType, listener, useCapture);
+
+    return function () {
+      return node.removeEventListener(eventType, listener, useCapture);
+    };
+  });
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],48:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.h = h;
 
 var _is = require('snabbdom/is');
 
@@ -3646,20 +3913,24 @@ var _is2 = _interopRequireDefault(_is);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var isObservable = function isObservable(x) {
-  return typeof x.subscribe === 'function';
-};
+var vnode = require('snabbdom/vnode');
 
-var addNSToObservable = function addNSToObservable(vNode) {
-  addNS(vNode.data, vNode.children); // eslint-disable-line
-};
+function isStream(stream) {
+  return typeof stream.subscribe === 'function';
+}
+
+function mutateStreamWithNS(vNode) {
+  addNS(vNode.data, vNode.children);
+  return vNode;
+}
 
 function addNS(data, children) {
+  // eslint-disable-line complexity
   data.ns = 'http://www.w3.org/2000/svg';
   if (typeof children !== 'undefined' && _is2.default.array(children)) {
     for (var i = 0; i < children.length; ++i) {
-      if (isObservable(children[i])) {
-        children[i] = children[i].tap(addNSToObservable);
+      if (isStream(children[i])) {
+        children[i] = children[i].map(mutateStreamWithNS);
       } else {
         addNS(children[i].data, children[i].children);
       }
@@ -3667,12 +3938,12 @@ function addNS(data, children) {
   }
 }
 
-/* eslint-disable */
 function h(sel, b, c) {
-  var data = {},
-      children,
-      text,
-      i;
+  // eslint-disable-line complexity
+  var data = {};
+  var children = void 0;
+  var text = void 0;
+  var i = void 0;
   if (arguments.length === 3) {
     data = b;
     if (_is2.default.array(c)) {
@@ -3690,159 +3961,310 @@ function h(sel, b, c) {
     }
   }
   if (_is2.default.array(children)) {
+    children = children.filter(function (x) {
+      return x;
+    }); // handle null/undef children
     for (i = 0; i < children.length; ++i) {
-      if (_is2.default.primitive(children[i])) children[i] = (0, _vnode2.default)(undefined, undefined, undefined, children[i]);
+      if (_is2.default.primitive(children[i])) {
+        children[i] = vnode(undefined, undefined, undefined, children[i]);
+      }
     }
   }
   if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g') {
     addNS(data, children);
   }
-  return (0, _vnode2.default)(sel, data, children, text, undefined);
+  return vnode(sel, data, children, text, undefined);
 };
 
-/* eslint-enable */
-
-exports.default = h;
-
-},{"snabbdom/is":34,"snabbdom/vnode":43}],47:[function(require,module,exports){
+},{"snabbdom/is":32,"snabbdom/vnode":41}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeHTMLDriver = exports.mockDOMSource = exports.makeDOMDriver = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.h = exports.thunk = exports.modules = undefined;
+
+var _h = require('./h');
+
+function isValidString(param) {
+  return typeof param === 'string' && param.length > 0;
+}
+
+function isSelector(param) {
+  return isValidString(param) && (param[0] === '.' || param[0] === '#');
+}
+
+function createTagFunction(tagName) {
+  return function hyperscript(first, b, c) {
+    // eslint-disable-line complexity
+    if (isSelector(first)) {
+      if (!!b && !!c) {
+        return (0, _h.h)(tagName + first, b, c);
+      } else if (!!b) {
+        // eslint-disable-line no-extra-boolean-cast
+        return (0, _h.h)(tagName + first, b);
+      } else {
+        return (0, _h.h)(tagName + first, {});
+      }
+    } else if (!!b) {
+      // eslint-disable-line no-extra-boolean-cast
+      return (0, _h.h)(tagName, first, b);
+    } else if (!!first) {
+      // eslint-disable-line no-extra-boolean-cast
+      return (0, _h.h)(tagName, first);
+    } else {
+      return (0, _h.h)(tagName, {});
+    }
+  };
+}
+
+var SVG_TAG_NAMES = ['a', 'altGlyph', 'altGlyphDef', 'altGlyphItem', 'animate', 'animateColor', 'animateMotion', 'animateTransform', 'animateTransform', 'circle', 'clipPath', 'colorProfile', 'cursor', 'defs', 'desc', 'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotlight', 'feTile', 'feTurbulence', 'filter', 'font', 'fontFace', 'fontFaceFormat', 'fontFaceName', 'fontFaceSrc', 'fontFaceUri', 'foreignObject', 'g', 'glyph', 'glyphRef', 'hkern', 'image', 'line', 'linearGradient', 'marker', 'mask', 'metadata', 'missingGlyph', 'mpath', 'path', 'pattern', 'polygon', 'polyling', 'radialGradient', 'rect', 'script', 'set', 'stop', 'style', 'switch', 'symbol', 'text', 'textPath', 'title', 'tref', 'tspan', 'use', 'view', 'vkern'];
+
+var svg = createTagFunction('svg');
+
+SVG_TAG_NAMES.forEach(function (tag) {
+  svg[tag] = createTagFunction(tag);
+});
+
+var TAG_NAMES = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'meta', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'p', 'param', 'pre', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'title', 'tr', 'u', 'ul', 'video', 'progress'];
+
+var exported = {
+  SVG_TAG_NAMES: SVG_TAG_NAMES,
+  TAG_NAMES: TAG_NAMES,
+  svg: svg,
+  isSelector: isSelector,
+  createTagFunction: createTagFunction
+};
+
+for (var i = 0; i < TAG_NAMES.length; ++i) {
+  exported[TAG_NAMES[i]] = createTagFunction(TAG_NAMES[i]);
+}
+
+exports.default = exported;
+
+},{"./h":48}],50:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.thunk = thunk;
+
+var _h = require('./h');
+
+function copyToThunk(vnode, thunk) {
+  thunk.elm = vnode.elm;
+  vnode.data.fn = thunk.data.fn;
+  vnode.data.args = thunk.data.args;
+  thunk.data = vnode.data;
+  thunk.children = vnode.children;
+  thunk.text = vnode.text;
+  thunk.elm = vnode.elm;
+}
+
+function init(thunk) {
+  var cur = thunk.data;
+  var vnode = cur.fn.apply(void 0, cur.args);
+  copyToThunk(vnode, thunk);
+}
+
+function prepatch(oldVnode, thunk) {
+  var old = oldVnode.data;
+  var cur = thunk.data;
+  var oldArgs = old.args;
+  var args = cur.args;
+  if (old.fn !== cur.fn || oldArgs.length !== args.length) {
+    copyToThunk(cur.fn.apply(void 0, args), thunk);
+  }
+  for (var i = 0; i < args.length; ++i) {
+    if (oldArgs[i] !== args[i]) {
+      copyToThunk(cur.fn.apply(void 0, args), thunk);
+      return;
+    }
+  }
+  copyToThunk(oldVnode, thunk);
+}
+
+function thunk(sel, key, fn, args) {
+  if (args === void 0) {
+    args = fn;
+    fn = key;
+    key = void 0;
+  }
+  return (0, _h.h)(sel, {
+    key: key,
+    hook: { init: init, prepatch: prepatch },
+    fn: fn,
+    args: args
+  });
+}
+
+},{"./h":48}],51:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeHTMLDriver = exports.mockDOMSource = exports.makeDOMDriver = exports.modules = exports.progress = exports.video = exports.ul = exports.u = exports.tr = exports.title = exports.thead = exports.th = exports.tfoot = exports.textarea = exports.td = exports.tbody = exports.table = exports.sup = exports.sub = exports.style = exports.strong = exports.span = exports.source = exports.small = exports.select = exports.section = exports.script = exports.samp = exports.s = exports.ruby = exports.rt = exports.rp = exports.q = exports.pre = exports.param = exports.p = exports.option = exports.optgroup = exports.ol = exports.object = exports.noscript = exports.nav = exports.meta = exports.menu = exports.mark = exports.map = exports.main = exports.link = exports.li = exports.legend = exports.label = exports.keygen = exports.kbd = exports.ins = exports.input = exports.img = exports.iframe = exports.i = exports.html = exports.hr = exports.hgroup = exports.header = exports.head = exports.h6 = exports.h5 = exports.h4 = exports.h3 = exports.h2 = exports.h1 = exports.form = exports.footer = exports.figure = exports.figcaption = exports.fieldset = exports.embed = exports.em = exports.dt = exports.dl = exports.div = exports.dir = exports.dfn = exports.del = exports.dd = exports.colgroup = exports.col = exports.code = exports.cite = exports.caption = exports.canvas = exports.button = exports.br = exports.body = exports.blockquote = exports.bdo = exports.bdi = exports.base = exports.b = exports.audio = exports.aside = exports.article = exports.area = exports.address = exports.abbr = exports.a = exports.svg = exports.thunk = exports.h = undefined;
+
+var _h = require('./hyperscript/h');
+
+Object.defineProperty(exports, 'h', {
+  enumerable: true,
+  get: function get() {
+    return _h.h;
+  }
+});
+
+var _thunk = require('./hyperscript/thunk');
+
+Object.defineProperty(exports, 'thunk', {
+  enumerable: true,
+  get: function get() {
+    return _thunk.thunk;
+  }
+});
+
+var _makeDOMDriver = require('./makeDOMDriver');
+
+Object.defineProperty(exports, 'makeDOMDriver', {
+  enumerable: true,
+  get: function get() {
+    return _makeDOMDriver.makeDOMDriver;
+  }
+});
+
+var _mockDOMSource = require('./mockDOMSource');
+
+Object.defineProperty(exports, 'mockDOMSource', {
+  enumerable: true,
+  get: function get() {
+    return _mockDOMSource.mockDOMSource;
+  }
+});
+
+var _makeHTMLDriver = require('./makeHTMLDriver');
+
+Object.defineProperty(exports, 'makeHTMLDriver', {
+  enumerable: true,
+  get: function get() {
+    return _makeHTMLDriver.makeHTMLDriver;
+  }
+});
+
+var _helpers = require('./hyperscript/helpers');
+
+var _helpers2 = _interopRequireDefault(_helpers);
 
 var _modules = require('./modules');
 
 var modules = _interopRequireWildcard(_modules);
 
-var _thunk = require('snabbdom/thunk');
-
-var _thunk2 = _interopRequireDefault(_thunk);
-
-var _hyperscript = require('./hyperscript');
-
-var _hyperscript2 = _interopRequireDefault(_hyperscript);
-
-var _hyperscriptHelpers = require('hyperscript-helpers');
-
-var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
-
-var _makeDOMDriver = require('./makeDOMDriver');
-
-var _mockDOMSource = require('./mockDOMSource');
-
-var _makeHTMLDriver = require('./makeHTMLDriver');
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.modules = modules;
-exports.thunk = _thunk2.default;
-exports.h = _hyperscript2.default;
-
-var _hh = (0, _hyperscriptHelpers2.default)(_hyperscript2.default);
-
-var a = _hh.a;
-var abbr = _hh.abbr;
-var address = _hh.address;
-var area = _hh.area;
-var article = _hh.article;
-var aside = _hh.aside;
-var audio = _hh.audio;
-var b = _hh.b;
-var base = _hh.base;
-var bdi = _hh.bdi;
-var bdo = _hh.bdo;
-var blockquote = _hh.blockquote;
-var body = _hh.body;
-var br = _hh.br;
-var button = _hh.button;
-var canvas = _hh.canvas;
-var caption = _hh.caption;
-var cite = _hh.cite;
-var code = _hh.code;
-var col = _hh.col;
-var colgroup = _hh.colgroup;
-var dd = _hh.dd;
-var del = _hh.del;
-var dfn = _hh.dfn;
-var dir = _hh.dir;
-var div = _hh.div;
-var dl = _hh.dl;
-var dt = _hh.dt;
-var em = _hh.em;
-var embed = _hh.embed;
-var fieldset = _hh.fieldset;
-var figcaption = _hh.figcaption;
-var figure = _hh.figure;
-var footer = _hh.footer;
-var form = _hh.form;
-var h1 = _hh.h1;
-var h2 = _hh.h2;
-var h3 = _hh.h3;
-var h4 = _hh.h4;
-var h5 = _hh.h5;
-var h6 = _hh.h6;
-var head = _hh.head;
-var header = _hh.header;
-var hgroup = _hh.hgroup;
-var hr = _hh.hr;
-var html = _hh.html;
-var i = _hh.i;
-var iframe = _hh.iframe;
-var img = _hh.img;
-var input = _hh.input;
-var ins = _hh.ins;
-var kbd = _hh.kbd;
-var keygen = _hh.keygen;
-var label = _hh.label;
-var legend = _hh.legend;
-var li = _hh.li;
-var link = _hh.link;
-var main = _hh.main;
-var map = _hh.map;
-var mark = _hh.mark;
-var menu = _hh.menu;
-var meta = _hh.meta;
-var nav = _hh.nav;
-var noscript = _hh.noscript;
-var object = _hh.object;
-var ol = _hh.ol;
-var optgroup = _hh.optgroup;
-var option = _hh.option;
-var p = _hh.p;
-var param = _hh.param;
-var pre = _hh.pre;
-var q = _hh.q;
-var rp = _hh.rp;
-var rt = _hh.rt;
-var ruby = _hh.ruby;
-var s = _hh.s;
-var samp = _hh.samp;
-var script = _hh.script;
-var section = _hh.section;
-var select = _hh.select;
-var small = _hh.small;
-var source = _hh.source;
-var span = _hh.span;
-var strong = _hh.strong;
-var style = _hh.style;
-var sub = _hh.sub;
-var sup = _hh.sup;
-var table = _hh.table;
-var tbody = _hh.tbody;
-var td = _hh.td;
-var textarea = _hh.textarea;
-var tfoot = _hh.tfoot;
-var th = _hh.th;
-var thead = _hh.thead;
-var title = _hh.title;
-var tr = _hh.tr;
-var u = _hh.u;
-var ul = _hh.ul;
-var video = _hh.video;
+var svg = _helpers2.default.svg;
+var a = _helpers2.default.a;
+var abbr = _helpers2.default.abbr;
+var address = _helpers2.default.address;
+var area = _helpers2.default.area;
+var article = _helpers2.default.article;
+var aside = _helpers2.default.aside;
+var audio = _helpers2.default.audio;
+var b = _helpers2.default.b;
+var base = _helpers2.default.base;
+var bdi = _helpers2.default.bdi;
+var bdo = _helpers2.default.bdo;
+var blockquote = _helpers2.default.blockquote;
+var body = _helpers2.default.body;
+var br = _helpers2.default.br;
+var button = _helpers2.default.button;
+var canvas = _helpers2.default.canvas;
+var caption = _helpers2.default.caption;
+var cite = _helpers2.default.cite;
+var code = _helpers2.default.code;
+var col = _helpers2.default.col;
+var colgroup = _helpers2.default.colgroup;
+var dd = _helpers2.default.dd;
+var del = _helpers2.default.del;
+var dfn = _helpers2.default.dfn;
+var dir = _helpers2.default.dir;
+var div = _helpers2.default.div;
+var dl = _helpers2.default.dl;
+var dt = _helpers2.default.dt;
+var em = _helpers2.default.em;
+var embed = _helpers2.default.embed;
+var fieldset = _helpers2.default.fieldset;
+var figcaption = _helpers2.default.figcaption;
+var figure = _helpers2.default.figure;
+var footer = _helpers2.default.footer;
+var form = _helpers2.default.form;
+var h1 = _helpers2.default.h1;
+var h2 = _helpers2.default.h2;
+var h3 = _helpers2.default.h3;
+var h4 = _helpers2.default.h4;
+var h5 = _helpers2.default.h5;
+var h6 = _helpers2.default.h6;
+var head = _helpers2.default.head;
+var header = _helpers2.default.header;
+var hgroup = _helpers2.default.hgroup;
+var hr = _helpers2.default.hr;
+var html = _helpers2.default.html;
+var i = _helpers2.default.i;
+var iframe = _helpers2.default.iframe;
+var img = _helpers2.default.img;
+var input = _helpers2.default.input;
+var ins = _helpers2.default.ins;
+var kbd = _helpers2.default.kbd;
+var keygen = _helpers2.default.keygen;
+var label = _helpers2.default.label;
+var legend = _helpers2.default.legend;
+var li = _helpers2.default.li;
+var link = _helpers2.default.link;
+var main = _helpers2.default.main;
+var map = _helpers2.default.map;
+var mark = _helpers2.default.mark;
+var menu = _helpers2.default.menu;
+var meta = _helpers2.default.meta;
+var nav = _helpers2.default.nav;
+var noscript = _helpers2.default.noscript;
+var object = _helpers2.default.object;
+var ol = _helpers2.default.ol;
+var optgroup = _helpers2.default.optgroup;
+var option = _helpers2.default.option;
+var p = _helpers2.default.p;
+var param = _helpers2.default.param;
+var pre = _helpers2.default.pre;
+var q = _helpers2.default.q;
+var rp = _helpers2.default.rp;
+var rt = _helpers2.default.rt;
+var ruby = _helpers2.default.ruby;
+var s = _helpers2.default.s;
+var samp = _helpers2.default.samp;
+var script = _helpers2.default.script;
+var section = _helpers2.default.section;
+var select = _helpers2.default.select;
+var small = _helpers2.default.small;
+var source = _helpers2.default.source;
+var span = _helpers2.default.span;
+var strong = _helpers2.default.strong;
+var style = _helpers2.default.style;
+var sub = _helpers2.default.sub;
+var sup = _helpers2.default.sup;
+var table = _helpers2.default.table;
+var tbody = _helpers2.default.tbody;
+var td = _helpers2.default.td;
+var textarea = _helpers2.default.textarea;
+var tfoot = _helpers2.default.tfoot;
+var th = _helpers2.default.th;
+var thead = _helpers2.default.thead;
+var title = _helpers2.default.title;
+var tr = _helpers2.default.tr;
+var u = _helpers2.default.u;
+var ul = _helpers2.default.ul;
+var video = _helpers2.default.video;
+var progress = _helpers2.default.progress;
+exports.svg = svg;
 exports.a = a;
 exports.abbr = abbr;
 exports.address = address;
@@ -3942,182 +4364,266 @@ exports.tr = tr;
 exports.u = u;
 exports.ul = ul;
 exports.video = video;
-exports.makeDOMDriver = _makeDOMDriver.makeDOMDriver;
-exports.mockDOMSource = _mockDOMSource.mockDOMSource;
-exports.makeHTMLDriver = _makeHTMLDriver.makeHTMLDriver;
+exports.progress = progress;
+exports.modules = modules;
 
-},{"./hyperscript":46,"./makeDOMDriver":49,"./makeHTMLDriver":50,"./mockDOMSource":52,"./modules":53,"hyperscript-helpers":2,"snabbdom/thunk":42}],48:[function(require,module,exports){
+},{"./hyperscript/h":48,"./hyperscript/helpers":49,"./hyperscript/thunk":50,"./makeDOMDriver":54,"./makeHTMLDriver":55,"./mockDOMSource":56,"./modules":57}],52:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isolateSource = exports.isolateSink = undefined;
-
-var _utils = require('./utils');
-
-var isolateSource = function isolateSource(source, scope) {
-  return source.select(_utils.SCOPE_PREFIX + scope);
-};
-
-var isolateSink = function isolateSink(sink, scope) {
-  return sink.tap(function (vTree) {
-    vTree.data.isolate = _utils.SCOPE_PREFIX + scope;
-  });
-};
-
-exports.isolateSink = isolateSink;
 exports.isolateSource = isolateSource;
+exports.isolateSink = isolateSink;
 
-},{"./utils":57}],49:[function(require,module,exports){
+var _util = require('../util');
+
+function isolateSource(source, scope) {
+  return source.select(_util.SCOPE_PREFIX + scope);
+}
+
+function isolateSink(sink, scope) {
+  return sink.do(function (vTree) {
+    if (vTree.data.isolate) {
+      var existingScope = parseInt(vTree.data.isolate.split(_util.SCOPE_PREFIX + 'cycle')[1]);
+
+      var _scope = parseInt(scope.split('cycle')[1]);
+
+      if (Number.isNaN(existingScope) || Number.isNaN(_scope) || existingScope > _scope) {
+        return vTree;
+      }
+    }
+    vTree.data.isolate = _util.SCOPE_PREFIX + scope;
+  });
+}
+
+},{"../util":59}],53:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeDOMDriver = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var IsolateModule = exports.IsolateModule = function () {
+  function IsolateModule(isolatedElements) {
+    _classCallCheck(this, IsolateModule);
+
+    this.isolatedElements = isolatedElements;
+    this.eventDelegators = new Map([]);
+  }
+
+  _createClass(IsolateModule, [{
+    key: 'setScope',
+    value: function setScope(elm, scope) {
+      this.isolatedElements.set(scope, elm);
+    }
+  }, {
+    key: 'removeScope',
+    value: function removeScope(scope) {
+      this.isolatedElements.delete(scope);
+    }
+  }, {
+    key: 'getIsolatedElement',
+    value: function getIsolatedElement(scope) {
+      return this.isolatedElements.get(scope);
+    }
+  }, {
+    key: 'isIsolatedElement',
+    value: function isIsolatedElement(elm) {
+      var elements = Array.from(this.isolatedElements.entries());
+
+      for (var i = 0; i < elements.length; ++i) {
+        if (elm === elements[i][1]) {
+          return elements[i][0];
+        }
+      }
+      return false;
+    }
+  }, {
+    key: 'addEventDelegator',
+    value: function addEventDelegator(scope, eventDelegator) {
+      var delegators = this.eventDelegators.get(scope);
+      if (!delegators) {
+        delegators = [];
+        this.eventDelegators.set(scope, delegators);
+      }
+      delegators[delegators.length] = eventDelegator;
+    }
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this.isolatedElements.clear();
+    }
+  }, {
+    key: 'createModule',
+    value: function createModule() {
+      var self = this;
+      return {
+        create: function create(oldVNode, vNode) {
+          // eslint-disable-line complexity
+          var _oldVNode$data = oldVNode.data;
+          var oldData = _oldVNode$data === undefined ? {} : _oldVNode$data;
+          var elm = vNode.elm;
+          var _vNode$data = vNode.data;
+          var data = _vNode$data === undefined ? {} : _vNode$data;
+
+          var oldScope = oldData.isolate || '';
+          var scope = data.isolate || '';
+          if (scope) {
+            if (oldScope) {
+              self.removeScope(oldScope);
+            }
+            self.setScope(elm, scope);
+            var delegators = self.eventDelegators.get(scope);
+            if (delegators) {
+              for (var i = 0, len = delegators.length; i < len; ++i) {
+                delegators[i].updateTopElement(elm);
+              }
+            } else if (delegators === void 0) {
+              self.eventDelegators.set(scope, []);
+            }
+          }
+          if (oldScope && !scope) {
+            self.removeScope(scope);
+          }
+        },
+        update: function update(oldVNode, vNode) {
+          // eslint-disable-line complexity
+          var _oldVNode$data2 = oldVNode.data;
+          var oldData = _oldVNode$data2 === undefined ? {} : _oldVNode$data2;
+          var elm = vNode.elm;
+          var _vNode$data2 = vNode.data;
+          var data = _vNode$data2 === undefined ? {} : _vNode$data2;
+
+          var oldScope = oldData.isolate || '';
+          var scope = data.isolate || '';
+          if (scope) {
+            if (oldScope) {
+              self.removeScope(oldScope);
+            }
+            self.setScope(elm, scope);
+          }
+          if (oldScope && !scope) {
+            self.removeScope(scope);
+          }
+        },
+        remove: function remove(_ref, cb) {
+          var _ref$data = _ref.data;
+          var data = _ref$data === undefined ? {} : _ref$data;
+
+          var scope = data.isolate;
+          if (scope) {
+            self.removeScope(scope);
+            if (self.eventDelegators.get(scope)) {
+              self.eventDelegators.set(scope, []);
+            }
+          }
+          cb();
+        },
+        destroy: function destroy(_ref2) {
+          var _ref2$data = _ref2.data;
+          var data = _ref2$data === undefined ? {} : _ref2$data;
+
+          var scope = data.isolate;
+          if (scope) {
+            self.removeScope(scope);
+            if (self.eventDelegators.get(scope)) {
+              self.eventDelegators.set(scope, []);
+            }
+          }
+        }
+      };
+    }
+  }]);
+
+  return IsolateModule;
+}();
+
+},{}],54:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeDOMDriver = makeDOMDriver;
 
 var _snabbdom = require('snabbdom');
 
-var _h = require('snabbdom/h');
+var _DOMSource = require('./DOMSource');
 
-var _h2 = _interopRequireDefault(_h);
+var _VNodeWrapper = require('./VNodeWrapper');
 
-var _classNameFromVNode = require('snabbdom-selector/lib/classNameFromVNode');
-
-var _classNameFromVNode2 = _interopRequireDefault(_classNameFromVNode);
-
-var _selectorParser2 = require('snabbdom-selector/lib/selectorParser');
-
-var _selectorParser3 = _interopRequireDefault(_selectorParser2);
-
-var _utils = require('./utils');
+var _module = require('./isolate/module');
 
 var _modules = require('./modules');
 
 var _modules2 = _interopRequireDefault(_modules);
 
-var _isolate = require('./modules/isolate');
-
 var _transposition = require('./transposition');
 
-var _isolate2 = require('./isolate');
-
-var _select = require('./select');
-
-var _events = require('./events');
+var _util = require('./util');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function makeVNodeWrapper(rootElement) {
-  return function vNodeWrapper(vNode) {
-    var _selectorParser = (0, _selectorParser3.default)(vNode.sel);
-
-    var selectorTagName = _selectorParser.tagName;
-    var selectorId = _selectorParser.id;
-
-    var vNodeClassName = (0, _classNameFromVNode2.default)(vNode);
-    var _vNode$data = vNode.data;
-    var vNodeData = _vNode$data === undefined ? {} : _vNode$data;
-    var _vNodeData$props = vNodeData.props;
-    var vNodeDataProps = _vNodeData$props === undefined ? {} : _vNodeData$props;
-    var _vNodeDataProps$id = vNodeDataProps.id;
-    var vNodeId = _vNodeDataProps$id === undefined ? selectorId : _vNodeDataProps$id;
-
-
-    var isVNodeAndRootElementIdentical = vNodeId.toUpperCase() === rootElement.id.toUpperCase() && selectorTagName.toUpperCase() === rootElement.tagName.toUpperCase() && vNodeClassName.toUpperCase() === rootElement.className.toUpperCase();
-
-    if (isVNodeAndRootElementIdentical) {
-      return vNode;
-    }
-
-    var tagName = rootElement.tagName;
-    var id = rootElement.id;
-    var className = rootElement.className;
-
-    var elementId = id ? '#' + id : '';
-    var elementClassName = className ? '.' + className.split(' ').join('.') : '';
-    return (0, _h2.default)('' + tagName + elementId + elementClassName, {}, [vNode]);
-  };
-}
-
-function DOMDriverInputGuard(view$) {
-  if (!view$ || typeof view$.subscribe !== 'function') {
-    throw new Error('The DOM driver function expects as input an ' + 'Observable of virtual DOM elements');
-  }
-}
-
-function defaultOnErrorFn(msg) {
-  if (console && console.error) {
-    console.error(msg);
-  } else {
-    console.log(msg);
-  }
-}
-
-var defaults = {
-  modules: _modules2.default,
-  onError: defaultOnErrorFn
-};
-
-function makeDOMDriver(container) {
-  var _ref = arguments.length <= 1 || arguments[1] === undefined ? defaults : arguments[1];
-
-  var _ref$modules = _ref.modules;
-  var modules = _ref$modules === undefined ? _modules2.default : _ref$modules;
-  var _ref$onError = _ref.onError;
-  var onError = _ref$onError === undefined ? defaultOnErrorFn : _ref$onError;
-
+function makeDOMDriverInputGuard(modules) {
   if (!Array.isArray(modules)) {
     throw new Error('Optional modules option must be ' + 'an array for snabbdom modules');
   }
-
-  if (typeof onError !== 'function') {
-    throw new Error('You provided an `onError` to makeDOMDriver but it was ' + 'not a function. It should be a callback function to handle errors.');
-  }
-
-  var patch = (0, _snabbdom.init)(modules.concat(_isolate.IsolateModule));
-  var rootElement = (0, _utils.domSelectorParser)(container);
-
-  function DOMDriver(view$) {
-    DOMDriverInputGuard(view$);
-
-    var rootElement$ = view$.flatMapLatest(_transposition.transposeVTree).map(makeVNodeWrapper(rootElement)).scan(patch, rootElement).map(function (_ref2) {
-      var elm = _ref2.elm;
-      return elm;
-    }).doOnError(onError).replay(null, 1);
-
-    var disposable = rootElement$.connect();
-
-    return {
-      observable: rootElement$,
-      select: (0, _select.makeElementSelector)(rootElement$, []),
-      events: (0, _events.makeEventsSelector)(rootElement$, []),
-      dispose: function dispose() {
-        disposable.dispose();(0, _isolate.resetIsolatedElements)();
-      },
-      isolateSink: _isolate2.isolateSink,
-      isolateSource: _isolate2.isolateSource
-    };
-  }
-
-  return DOMDriver;
 }
 
-exports.makeDOMDriver = makeDOMDriver;
+function domDriverInputGuard(view$) {
+  // eslint-disable-line complexity
+  if (!view$ || typeof view$.subscribe !== 'function') // eslint-disable-line brace-style
+    {
+      throw new Error('The DOM driver function expects as input an Observable ' + 'of virtual DOM elements');
+    }
+}
 
-},{"./events":44,"./isolate":48,"./modules":53,"./modules/isolate":54,"./select":55,"./transposition":56,"./utils":57,"snabbdom":41,"snabbdom-selector/lib/classNameFromVNode":23,"snabbdom-selector/lib/selectorParser":24,"snabbdom/h":32}],50:[function(require,module,exports){
+function makeDOMDriver(container) {
+  var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+  var transposition = options.transposition || false;
+  var modules = options.modules || _modules2.default;
+  var isolateModule = new _module.IsolateModule(new Map([]));
+  var patch = (0, _snabbdom.init)([isolateModule.createModule()].concat(modules));
+  var rootElement = (0, _util.getElement)(container);
+  var vNodeWrapper = new _VNodeWrapper.VNodeWrapper(rootElement);
+  var delegators = new Map([]);
+  makeDOMDriverInputGuard(modules);
+
+  return function DOMDriver(vNode$) {
+    domDriverInputGuard(vNode$);
+    var preprocessedVNode$ = transposition ? vNode$.map(_transposition.transposeVNode).switch() : vNode$;
+
+    var rootElement$ = preprocessedVNode$.map(function (vNode) {
+      return vNodeWrapper.call(vNode);
+    }).scan(patch, rootElement).startWith(rootElement).map(function (vNode) {
+      return vNode.elm || vNode;
+    }).replay(null, 1);
+
+    rootElement$.connect();
+
+    return new _DOMSource.DOMSource(rootElement$, [], isolateModule, delegators);
+  };
+}
+
+},{"./DOMSource":42,"./VNodeWrapper":46,"./isolate/module":53,"./modules":57,"./transposition":58,"./util":59,"snabbdom":40}],55:[function(require,module,exports){
 (function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeHTMLDriver = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+exports.makeHTMLDriver = makeHTMLDriver;
 
 var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
-
-var _rx2 = _interopRequireDefault(_rx);
 
 var _snabbdomToHtml = require('snabbdom-to-html');
 
@@ -4127,128 +4633,120 @@ var _transposition = require('./transposition');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function makeBogusSelect() {
-  return function select() {
-    return {
-      observable: _rx2.default.Observable.empty(),
-      events: function events() {
-        return _rx2.default.Observable.empty();
-      }
-    };
-  };
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var HTMLSource = function () {
+  function HTMLSource(vNode$) {
+    _classCallCheck(this, HTMLSource);
+
+    this._html$ = vNode$.last().map(_snabbdomToHtml2.default);
+  }
+
+  _createClass(HTMLSource, [{
+    key: 'select',
+    value: function select() {
+      return new HTMLSource(_rx.Observable.empty());
+    }
+  }, {
+    key: 'events',
+    value: function events() {
+      return _rx.Observable.empty();
+    }
+  }, {
+    key: 'elements',
+    get: function get() {
+      return this._html$;
+    }
+  }]);
+
+  return HTMLSource;
+}();
 
 function makeHTMLDriver() {
-  return function htmlDriver(vtree$) {
-    var output$ = vtree$.flatMapLatest(_transposition.transposeVTree).last().map(_snabbdomToHtml2.default);
-    output$.select = makeBogusSelect();
-    return output$;
+  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var transposition = options.transposition || false;
+  return function htmlDriver(vNode$) {
+    var preprocessedVNode$ = transposition ? vNode$.map(_transposition.transposeVNode).switch() : vNode$;
+    return new HTMLSource(preprocessedVNode$);
   };
 }
-
-exports.makeHTMLDriver = makeHTMLDriver;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transposition":56,"snabbdom-to-html":26}],51:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.makeIsStrictlyInRootScope = makeIsStrictlyInRootScope;
-
-var _isolate = require('./modules/isolate');
-
-function makeIsStrictlyInRootScope(scope) {
-  return function isStrictlyInRootScope(leaf) {
-    for (var el = leaf; el; el = el.parentElement) {
-      var _scope = (0, _isolate.isIsolatedElement)(el);
-      if (_scope && _scope !== scope) {
-        return false;
-      }
-      if (_scope) {
-        return true;
-      }
-    }
-    return true;
-  };
-}
-
-},{"./modules/isolate":54}],52:[function(require,module,exports){
+},{"./transposition":58,"snabbdom-to-html":25}],56:[function(require,module,exports){
 (function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mockDOMSource = undefined;
+exports.MockedDOMSource = undefined;
 
-var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
-
-var _rx2 = _interopRequireDefault(_rx);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var emptyStream = _rx2.default.Observable.empty();
-
-function getEventsStreamForSelector(mockedEventTypes) {
-  return function getEventsStream(eventType) {
-    for (var key in mockedEventTypes) {
-      if (mockedEventTypes.hasOwnProperty(key) && key === eventType) {
-        return mockedEventTypes[key];
-      }
-    }
-    return emptyStream;
-  };
-}
-
-function makeMockSelector(mockedSelectors) {
-  return function select(selector) {
-    for (var key in mockedSelectors) {
-      if (mockedSelectors.hasOwnProperty(key) && key === selector) {
-        var observable = emptyStream;
-        if (mockedSelectors[key].hasOwnProperty('observable')) {
-          observable = mockedSelectors[key].observable;
-        }
-        return {
-          observable: observable,
-          select: makeMockSelector(mockedSelectors[key]),
-          events: getEventsStreamForSelector(mockedSelectors[key])
-        };
-      }
-    }
-    return {
-      observable: emptyStream,
-      select: makeMockSelector(mockedSelectors),
-      events: function events() {
-        return emptyStream;
-      }
-    };
-  };
-}
-
-function mockDOMSource() {
-  var mockedSelectors = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-  return {
-    observable: emptyStream,
-    select: makeMockSelector(mockedSelectors),
-    events: function events() {
-      return emptyStream;
-    }
-  };
-}
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 exports.mockDOMSource = mockDOMSource;
 
+var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MockedDOMSource = exports.MockedDOMSource = function () {
+  function MockedDOMSource(_mockConfig) {
+    _classCallCheck(this, MockedDOMSource);
+
+    this._mockConfig = _mockConfig;
+    if (_mockConfig['elements']) {
+      this.elements = _mockConfig['elements'];
+    } else {
+      this.elements = _rx.Observable.empty();
+    }
+  }
+
+  _createClass(MockedDOMSource, [{
+    key: 'events',
+    value: function events(eventType) {
+      var mockConfig = this._mockConfig;
+      var keys = Object.keys(mockConfig);
+      var keysLen = keys.length;
+      for (var i = 0; i < keysLen; i++) {
+        var key = keys[i];
+        if (key === eventType) {
+          return mockConfig[key];
+        }
+      }
+      return _rx.Observable.empty();
+    }
+  }, {
+    key: 'select',
+    value: function select(selector) {
+      var mockConfig = this._mockConfig;
+      var keys = Object.keys(mockConfig);
+      var keysLen = keys.length;
+      for (var i = 0; i < keysLen; i++) {
+        var key = keys[i];
+        if (key === selector) {
+          return new MockedDOMSource(mockConfig[key]);
+        }
+      }
+      return new MockedDOMSource({});
+    }
+  }]);
+
+  return MockedDOMSource;
+}();
+
+function mockDOMSource(mockConfig) {
+  return new MockedDOMSource(mockConfig);
+}
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],53:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.IsolateModule = exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
+exports.DatasetModule = exports.EventsModule = exports.HeroModule = exports.AttrsModule = exports.PropsModule = exports.ClassModule = exports.StyleModule = undefined;
 
 var _class = require('snabbdom/modules/class');
 
@@ -4274,7 +4772,9 @@ var _hero = require('snabbdom/modules/hero');
 
 var _hero2 = _interopRequireDefault(_hero);
 
-var _isolate = require('./isolate');
+var _dataset = require('snabbdom/modules/dataset');
+
+var _dataset2 = _interopRequireDefault(_dataset);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4285,261 +4785,113 @@ exports.PropsModule = _props2.default;
 exports.AttrsModule = _attributes2.default;
 exports.HeroModule = _hero2.default;
 exports.EventsModule = _eventlisteners2.default;
-exports.IsolateModule = _isolate.IsolateModule;
+exports.DatasetModule = _dataset2.default;
 
-},{"./isolate":54,"snabbdom/modules/attributes":35,"snabbdom/modules/class":36,"snabbdom/modules/eventlisteners":37,"snabbdom/modules/hero":38,"snabbdom/modules/props":39,"snabbdom/modules/style":40}],54:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.isIsolatedElement = isIsolatedElement;
-var isolatedElements = {};
-
-var getIsolatedElements = exports.getIsolatedElements = function getIsolatedElements() {
-  return isolatedElements;
-};
-var resetIsolatedElements = exports.resetIsolatedElements = function resetIsolatedElements() {
-  isolatedElements = {};
-};
-
-function isIsolatedElement(elm) {
-  var keys = Object.keys(isolatedElements);
-  for (var i = 0; i < keys.length; ++i) {
-    if (elm === isolatedElements[keys[i]]) {
-      return keys[i].trim();
-    }
-  }
-  return false;
-}
-
-function setScope(elm, scope) {
-  isolatedElements[scope] = elm;
-}
-
-function removeScope(scope) {
-  delete isolatedElements[scope];
-}
-
-function update(oldVNode, vNode) {
-  var _oldVNode$data = oldVNode.data;
-  var oldData = _oldVNode$data === undefined ? {} : _oldVNode$data;
-  var elm = vNode.elm;
-  var _vNode$data = vNode.data;
-  var data = _vNode$data === undefined ? {} : _vNode$data;
-
-
-  var oldIsolate = oldData.isolate || "";
-  var isolate = data.isolate || "";
-
-  if (isolate) {
-    removeScope(oldIsolate);
-    setScope(elm, isolate);
-  }
-  if (oldIsolate && !isolate) {
-    removeScope(isolate);
-  }
-}
-
-function remove(_ref, cb) {
-  var _ref$data = _ref.data;
-  var data = _ref$data === undefined ? {} : _ref$data;
-
-  if (data.isolate) {
-    removeScope(data.isolate);
-  }
-  cb();
-}
-
-function destroy(_ref2) {
-  var _ref2$data = _ref2.data;
-  var data = _ref2$data === undefined ? {} : _ref2$data;
-
-  if (data.isolate) {
-    removeScope(data.isolate);
-  }
-}
-
-var IsolateModule = {
-  create: update,
-  update: update,
-  remove: remove,
-  destroy: destroy
-};
-
-exports.IsolateModule = IsolateModule;
-
-},{}],55:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.makeIsStrictlyInRootScope = exports.makeElementSelector = undefined;
-
-var _utils = require('./utils');
-
-var _events = require('./events');
-
-var _isolate = require('./isolate');
-
-var _makeIsStrictlyInRootScope = require('./makeIsStrictlyInRootScope');
-
-var _isolate2 = require('./modules/isolate');
-
-var matchesSelector = void 0;
-try {
-  matchesSelector = require('matches-selector');
-} catch (e) {
-  matchesSelector = function matchesSelector() {};
-}
-
-function sortIsolatedNamespace(a) {
-  return a.indexOf(_utils.SCOPE_PREFIX) !== -1 ? 1 : -1;
-}
-
-function makeFindElements(namespace) {
-  return function findElements(rootElement) {
-    if (namespace.join('') === '') {
-      return rootElement;
-    }
-    var slice = Array.prototype.slice;
-
-    var scope = (0, _utils.getScope)(namespace);
-    var selector = (0, _utils.getSelectors)(namespace);
-    var topNode = rootElement;
-    var topNodeMatches = [];
-
-    if (scope.length > 0) {
-      topNode = (0, _isolate2.getIsolatedElements)()[scope];
-      if (matchesSelector(topNode, selector)) {
-        topNodeMatches.push(topNode);
-      }
-    }
-
-    return slice.call(topNode.querySelectorAll(selector)).filter((0, _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope)(scope)).concat(topNodeMatches);
-  };
-}
-
-function makeElementSelector(rootElement$, namespace) {
-  return function elementSelector(selector) {
-    if (typeof selector !== 'string') {
-      throw new Error('DOM driver\'s select() expects the argument to be a ' + 'string as a CSS selector');
-    }
-
-    var trimmedSelector = selector.trim();
-    var childNamespace = trimmedSelector === ':root' ? namespace : namespace.concat(trimmedSelector).sort(sortIsolatedNamespace);
-
-    return {
-      observable: rootElement$.map(makeFindElements(childNamespace)),
-      namespace: childNamespace,
-      select: makeElementSelector(rootElement$, childNamespace),
-      events: (0, _events.makeEventsSelector)(rootElement$, childNamespace),
-      isolateSource: _isolate.isolateSource,
-      isolateSink: _isolate.isolateSink
-    };
-  };
-}
-
-exports.makeElementSelector = makeElementSelector;
-exports.makeIsStrictlyInRootScope = _makeIsStrictlyInRootScope.makeIsStrictlyInRootScope;
-
-},{"./events":44,"./isolate":48,"./makeIsStrictlyInRootScope":51,"./modules/isolate":54,"./utils":57,"matches-selector":22}],56:[function(require,module,exports){
+},{"snabbdom/modules/attributes":33,"snabbdom/modules/class":34,"snabbdom/modules/dataset":35,"snabbdom/modules/eventlisteners":36,"snabbdom/modules/hero":37,"snabbdom/modules/props":38,"snabbdom/modules/style":39}],58:[function(require,module,exports){
 (function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.transposeVTree = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+exports.transposeVNode = transposeVNode;
 
 var _rx = (typeof window !== "undefined" ? window['Rx'] : typeof global !== "undefined" ? global['Rx'] : null);
 
-var _rx2 = _interopRequireDefault(_rx);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function createVTree(vTree, children) {
+function createVTree(vNode, children) {
   return {
-    sel: vTree.sel,
-    data: vTree.data,
-    text: vTree.text,
-    elm: vTree.elm,
-    key: vTree.key,
+    sel: vNode.sel,
+    data: vNode.data,
+    text: vNode.text,
+    elm: vNode.elm,
+    key: vNode.key,
     children: children
   };
 }
 
-function transposeVTree(vTree) {
-  if (!vTree) {
-    return null;
-  } else if (vTree && typeof vTree.data === 'object' && vTree.data.static) {
-    return _rx2.default.Observable.just(vTree);
-  } else if (typeof vTree.subscribe === 'function') {
-    return vTree.flatMapLatest(transposeVTree);
-  } else if (typeof vTree === 'object') {
-    if (!vTree.children || vTree.children.length === 0) {
-      return _rx2.default.Observable.just(vTree);
+function transposeVNode(vNode) {
+  // eslint-disable-line complexity
+  if (vNode && vNode.data && vNode.data.static) {
+    return _rx.Observable.just(vNode);
+  } else if (typeof vNode.subscribe === 'function') {
+    return vNode.map(transposeVNode).switch();
+  } else if (vNode !== null && (typeof vNode === 'undefined' ? 'undefined' : _typeof(vNode)) === 'object') {
+    if (!vNode.children || vNode.children.length === 0) {
+      return _rx.Observable.just(vNode);
     }
 
-    var vTreeChildren = vTree.children.map(transposeVTree).filter(function (x) {
-      return x !== null;
-    });
-
-    return vTreeChildren.length === 0 ? _rx2.default.Observable.just(createVTree(vTree, vTreeChildren)) : _rx2.default.Observable.combineLatest(vTreeChildren, function () {
+    return _rx.Observable.combineLatest(vNode.children.map(transposeVNode), function () {
       for (var _len = arguments.length, children = Array(_len), _key = 0; _key < _len; _key++) {
         children[_key] = arguments[_key];
       }
 
-      return createVTree(vTree, children);
+      return createVTree(vNode, children);
     });
   } else {
-    throw new Error('Unhandled vTree Value');
+    throw new TypeError('transposition: Unhandled vNode type');
   }
 }
 
-exports.transposeVTree = transposeVTree;
-
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],57:[function(require,module,exports){
-"use strict";
+},{}],59:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var SCOPE_PREFIX = "cycle-isolate-";
 
-var isElement = function isElement(obj) {
-  return typeof HTMLElement === "object" ? obj instanceof HTMLElement || obj instanceof DocumentFragment : obj && typeof obj === "object" && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === "string";
-};
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var domSelectorParser = function domSelectorParser(selectors) {
-  var domElement = typeof selectors === "string" ? document.querySelector(selectors) : selectors;
-
-  if (typeof domElement === "string" && domElement === null) {
-    throw new Error("Cannot render into unknown element `" + selectors + "`");
-  } else if (!isElement(domElement)) {
-    throw new Error("Given container is not a DOM element neither a " + "selector string.");
-  }
-  return domElement;
-};
-
-var getScope = function getScope(namespace) {
-  return namespace.filter(function (c) {
-    return c.indexOf(SCOPE_PREFIX) > -1;
-  }).slice(-1).join(" ").trim();
-};
-
-var getSelectors = function getSelectors(namespace) {
-  return namespace.filter(function (c) {
-    return c.indexOf(SCOPE_PREFIX) === -1;
-  }).join(" ");
-};
-
-exports.domSelectorParser = domSelectorParser;
-exports.SCOPE_PREFIX = SCOPE_PREFIX;
+exports.getElement = getElement;
 exports.getScope = getScope;
 exports.getSelectors = getSelectors;
+var matchesSelector = void 0;
+try {
+  exports.matchesSelector = matchesSelector = require('matches-selector');
+} catch (e) {
+  exports.matchesSelector = matchesSelector = Function.prototype;
+}
 
-},{}]},{},[47])(47)
+exports.matchesSelector = matchesSelector;
+
+
+function isElement(obj) {
+  // eslint-disable-line complexity
+  return (typeof HTMLElement === 'undefined' ? 'undefined' : _typeof(HTMLElement)) === 'object' ? obj instanceof HTMLElement || obj instanceof DocumentFragment // eslint-disable-line
+  : obj && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj !== null && (obj.nodeType === 1 || obj.nodeType === 11) && typeof obj.nodeName === 'string';
+}
+
+var SCOPE_PREFIX = exports.SCOPE_PREFIX = '$$CYCLEDOM$$-';
+
+function getElement(selectors) {
+  // eslint-disable-line complexity
+  var domElement = typeof selectors === 'string' ? document.querySelector(selectors) : selectors;
+
+  if (typeof selectors === 'string' && domElement === null) {
+    throw new Error('Cannot render into unknown element \'' + selectors + '\'');
+  } else if (!isElement(domElement)) {
+    throw new Error('Given container is not a DOM element neither a ' + 'selector string.');
+  }
+  return domElement;
+}
+
+function getScope(namespace) {
+  return namespace.filter(function (c) {
+    return c.indexOf(SCOPE_PREFIX) > -1;
+  }).slice(-1) // only need the latest, most specific, isolated boundary
+  .join('');
+}
+
+function getSelectors(namespace) {
+  return namespace.filter(function (c) {
+    return c.indexOf(SCOPE_PREFIX) === -1;
+  }).join(' ');
+}
+
+var eventTypesThatDontBubble = exports.eventTypesThatDontBubble = ['load', 'unload', 'focus', 'blur', 'mouseenter', 'mouseleave', 'submit', 'change', 'reset', 'timeupdate', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'durationchange', 'play', 'pause', 'ratechange', 'volumechange', 'suspend', 'emptied', 'stalled', 'scroll'];
+
+},{"matches-selector":21}]},{},[51])(51)
 });

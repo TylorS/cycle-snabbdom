@@ -1,24 +1,32 @@
-import Rx from 'rx'
-import toHTML from 'snabbdom-to-html'
-import {transposeVTree} from './transposition'
+import {Observable} from 'rx'
+import toHtml from 'snabbdom-to-html'
 
-function makeBogusSelect() {
-  return function select() {
-    return {
-      observable: Rx.Observable.empty(),
-      events() {
-        return Rx.Observable.empty()
-      },
-    }
+import {transposeVNode} from './transposition'
+
+class HTMLSource {
+  constructor (vNode$) {
+    this._html$ = vNode$.last().map(toHtml)
+  }
+
+  get elements () {
+    return this._html$
+  }
+
+  select () {
+    return new HTMLSource(Observable.empty())
+  }
+
+  events () {
+    return Observable.empty()
   }
 }
 
-function makeHTMLDriver() {
-  return function htmlDriver(vtree$) {
-    let output$ = vtree$.flatMapLatest(transposeVTree).last().map(toHTML)
-    output$.select = makeBogusSelect()
-    return output$
+export function makeHTMLDriver (options = {}) {
+  const transposition = options.transposition || false
+  return function htmlDriver (vNode$) {
+    const preprocessedVNode$ = transposition
+      ? vNode$.map(transposeVNode).switch()
+      : vNode$
+    return new HTMLSource(preprocessedVNode$)
   }
 }
-
-export {makeHTMLDriver}

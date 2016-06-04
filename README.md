@@ -1,8 +1,11 @@
 # cycle-snabbdom [![Build Status](https://travis-ci.org/TylorS/cycle-snabbdom.svg?branch=master)](https://travis-ci.org/TylorS/cycle-snabbdom)
 
-# Deprecation Warning
+# Deprecation
 
-**This library will be deprecated in favor of version 10 of [@cycle/dom](https://github.com/cyclejs/dom) which a direct port of this library to TypeScript with new features, performance improvements, and lots of bug fixes!**
+**It's been great, and thank you for using this library :)
+@cycle/dom is likely reached it's last release candidate, and will be released soon! This library is at 100% parity with it,
+and is actually a slight step ahead as it has updated to the latest snabbdom 0.5.0 in the process. However, this will be the very last update this library will see.
+I strongly urge you to start updating your application to Cycle.js Diversity as soon as you can, and to stop using Rx ;)**
 
 Alternative DOM driver utilizing the [snabbdom](https://github.com/paldepind/snabbdom) library
 
