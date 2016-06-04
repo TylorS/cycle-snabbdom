@@ -1,3 +1,12 @@
+# v3.0.0 (2016-06-04)
+
+
+## Features
+
+- **rewrite:** rewrite to @cycle/dom@10.0.0-rc28
+  ([6d19df1f](https://github.com/TylorS/cycle-snabbdom/commits/6d19df1fc86bc67d8b289922f23574217a3951c5))
+
+
 # v2.0.0 (2016-05-17)
 
 
